@@ -1265,50 +1265,27 @@ window.addEventListener('load', function() {
 <!-- ═══ JAVASCRIPT CHATBOT ═══ -->
 <script>
 var chatOpen = false;
-
-var SYSTEM_PROMPT = `Eres el asistente virtual de Ronald Yesid Medina Quiroga, experto en Inteligencia Artificial y transformación digital en Colombia.
-
-SOBRE RONALD:
-- Mg. Gerencia de Proyectos, Ingeniero de Sistemas
-- Investigador doctoral en IA aplicada a educación
-- Citado como experto en La República (principal diario económico de Colombia)
-- Más de 10 años de experiencia en IA y tecnología
-
-SU INVESTIGACIÓN DOCTORAL:
-- Título: Arquitectura Nacional de Datos Territoriales con IA para Colombia
-- Objetivo: reducir deserción escolar en 116 municipios de Cundinamarca usando sistemas multiagente con IA
-- Brecha digital urbano-rural: 38.4%
-- Reducción proyectada de deserción: -53%
-- Cobertura: 116 municipios de Cundinamarca
-- Conectividad rural: 37% vs 79% urbano
-- Deserción escolar Cundinamarca: 3.8%
-- Deserción educación superior 2023: 8.97%
-
-SERVICIOS QUE OFRECE RONALD:
-- Consultoría en IA: diseño e implementación de soluciones con IA
-- Análisis de Datos: dashboards, KPIs y modelos predictivos
-- Formación en IA: talleres y semilleros para instituciones
-- Ciudades Inteligentes: infraestructura de datos territoriales
-
-PUBLICACIONES EN LA REPÚBLICA:
-- La guerra de los chips de IA: Nvidia, Broadcom y TSMC (Jul 2025)
-- ¿Cuál es el mejor modelo de IA? (Mar 2025)
-- 68% de empresas de software priorizan IA (Ago 2025)
-
-CONTACTO:
-- Email: ronald.medina.corp@gmail.com
-- WhatsApp: +57 322 717 8417
-- Web: ronalete.github.io/propuesta-ronald
-
-INSTRUCCIONES:
-- Responde SIEMPRE en español
-- Sé amable, profesional y conciso
-- Usa emojis con moderación
-- Si alguien quiere contratar o cotizar, dales el email y WhatsApp de Ronald
-- Máximo 3-4 párrafos por respuesta
-- Si no sabes algo, redirige al contacto de Ronald`;
-
 var chatHistory = [];
+var userName = '';
+
+var KB = [
+  { t:['hola','buenos','hey','hi','buenas','saludos','buen día','buen dia'], r: function(){ return '👋 ¡Hola! Soy el asistente de <strong>Ronald Medina</strong>, experto en IA.<br><br>¿Con quién tengo el gusto? 😊'; }},
+  { t:['me llamo','soy ','mi nombre','llamo'], r: function(i){ userName=i.replace(/.*?(me llamo|soy|mi nombre es|llamo)\s*/i,'').split(' ')[0]; return '¡Mucho gusto, <strong>'+userName+'</strong>! 🤝<br><br>¿En qué te puedo ayudar hoy?<br>Puedes preguntar sobre: <strong>servicios</strong>, <strong>investigación</strong>, <strong>contacto</strong> o <strong>publicaciones</strong>.'; }},
+  { t:['quién es ronald','quien es ronald','sobre ronald','perfil','experiencia de ronald','ronald medina'], r: function(){ return '👨‍💻 <strong>Ronald Yesid Medina Quiroga</strong> es:<br><br>🎓 Mg. Gerencia de Proyectos<br>💻 Ingeniero de Sistemas<br>🤖 +10 años en IA y transformación digital<br>📰 Experto citado en <em>La República</em><br>🌍 Especialista en educación y tecnología en Colombia<br><br>¿Quieres saber sobre sus servicios o investigación?'; }},
+  { t:['servicio','servicios','contratar','ayuda con','necesito','qué ofrece','que ofrece','qué hace','que hace'], r: function(){ return '💼 Ronald ofrece:<br><br>🤖 <strong>Consultoría en IA</strong> – Diseño e implementación de soluciones<br>📊 <strong>Análisis de Datos</strong> – Dashboards y modelos predictivos<br>🎓 <strong>Formación en IA</strong> – Talleres para instituciones<br>🏙️ <strong>Ciudades Inteligentes</strong> – Infraestructura de datos territoriales<br><br>¿Te interesa alguno en particular?'; }},
+  { t:['consultoría','consultoria','implementar ia','proyecto de ia','solución de ia','solucion de ia'], r: function(){ return '🤖 El servicio de <strong>Consultoría en IA</strong> incluye:<br><br>✅ Diagnóstico de necesidades tecnológicas<br>✅ Diseño de arquitectura de datos con IA<br>✅ Implementación de modelos predictivos<br>✅ Capacitación del equipo<br>✅ Seguimiento y mejora continua<br><br>Para una propuesta personalizada:<br>📧 <a href="mailto:ronald.medina.corp@gmail.com?subject=Consultoría IA" style="color:#1565C0">ronald.medina.corp@gmail.com</a>'; }},
+  { t:['análisis de datos','analisis de datos','dashboard','kpi','indicadores','datos'], r: function(){ return '📊 El servicio de <strong>Análisis de Datos</strong> incluye:<br><br>✅ Diseño de dashboards interactivos<br>✅ Definición y seguimiento de KPIs<br>✅ Modelos predictivos con ML<br>✅ Visualización de datos territoriales<br>✅ Reportes ejecutivos automatizados<br><br>¿Quieres una cotización? Escribe a Ronald:<br>📧 <a href="mailto:ronald.medina.corp@gmail.com?subject=Análisis de Datos" style="color:#1565C0">ronald.medina.corp@gmail.com</a>'; }},
+  { t:['formación','formacion','capacitación','capacitacion','taller','curso','semillero','aprender ia'], r: function(){ return '🎓 El servicio de <strong>Formación en IA</strong> incluye:<br><br>✅ Talleres presenciales y virtuales<br>✅ Semilleros de investigación en IA<br>✅ Formación para docentes e instituciones<br>✅ Contenidos adaptados al nivel del grupo<br>✅ Certificación al finalizar<br><br>Ideal para colegios, universidades y empresas.<br>📱 <a href="https://wa.me/573227178417?text=Hola Ronald, me interesa la formación en IA" target="_blank" style="color:#25D366">Consultar por WhatsApp</a>'; }},
+  { t:['investigación','investigacion','doctorado','doctoral','tesis','phd','deserción','desercion','municipios','cundinamarca'], r: function(){ return '🔬 La investigación doctoral de Ronald:<br><br>📌 <strong>Título:</strong> Arquitectura Nacional de Datos Territoriales con IA para Colombia<br><br>📊 <strong>Indicadores clave:</strong><br>• Brecha digital urbano-rural: <strong>38.4%</strong><br>• Reducción proyectada de deserción: <strong>−53%</strong><br>• Cobertura: <strong>116 municipios</strong> de Cundinamarca<br>• Conectividad rural: solo <strong>37%</strong> vs <strong>79%</strong> urbano<br>• Deserción educación superior 2023: <strong>8.97%</strong><br><br>¿Quieres más detalles sobre la metodología?'; }},
+  { t:['metodología','metodologia','cómo funciona','como funciona','método','metodo','fases','etapas'], r: function(){ return '⚙️ La metodología tiene <strong>4 fases</strong>:<br><br>1️⃣ <strong>Diagnóstico territorial</strong> – Mapeo de brechas digitales en 116 municipios<br>2️⃣ <strong>Diseño del modelo</strong> – Arquitectura de datos con sistemas multiagente<br>3️⃣ <strong>Implementación piloto</strong> – Prueba en instituciones seleccionadas<br>4️⃣ <strong>Escalabilidad</strong> – Expansión a Colombia y América Latina<br><br>¿Te interesa conocer los resultados esperados?'; }},
+  { t:['publicación','publicaciones','artículo','articulo','república','republica','nvidia','chips','prensa','medios'], r: function(){ return '📰 Ronald ha sido citado como experto en <strong>La República</strong>:<br><br>📌 <a href="https://www.larepublica.co/internet-economy/los-jugadores-en-la-guerra-de-los-chips-de-ia-nvidia-broadcom-y-tsmc-las-mas-valiosas-4183956" target="_blank" style="color:#1565C0">La guerra de los chips: Nvidia, Broadcom y TSMC</a><br>📅 Julio 2025<br><br>📌 <a href="https://www.larepublica.co/internet-economy/cual-es-el-mejor-modelo-de-inteligencia-artificial-4075578" target="_blank" style="color:#1565C0">¿Cuál es el mejor modelo de IA?</a><br>📅 Marzo 2025<br><br>📌 <a href="https://www.larepublica.co/especiales/la-expansion-de-la-industria-del-software/hasta-68-de-las-empresas-de-software-priorizan-el-uso-de-la-inteligencia-artificial-4211495" target="_blank" style="color:#1565C0">68% de empresas priorizan IA</a><br>📅 Agosto 2025'; }},
+  { t:['contacto','contactar','email','correo','whatsapp','teléfono','telefono','llamar','escribir','comunicar','hablar con ronald'], r: function(){ return '📬 Puedes contactar a Ronald por:<br><br>📧 <strong>Email:</strong> <a href="mailto:ronald.medina.corp@gmail.com" style="color:#1565C0">ronald.medina.corp@gmail.com</a><br>📱 <strong>WhatsApp:</strong> <a href="https://wa.me/573227178417" target="_blank" style="color:#25D366">+57 322 717 8417</a><br>🌐 <strong>Web:</strong> ronalete.github.io/propuesta-ronald<br><br>¡Responde en menos de 24 horas! 🚀'; }},
+  { t:['precio','costo','cuánto','cuanto','tarifa','cobras','presupuesto','valor','cotización','cotizacion'], r: function(){ return '💰 Los precios varían según el proyecto.<br><br>Lo mejor es hablar directamente con Ronald para una propuesta personalizada y sin compromiso:<br><br>📧 <a href="mailto:ronald.medina.corp@gmail.com?subject=Solicitud de cotización" style="color:#1565C0">Solicitar cotización por email</a><br>📱 <a href="https://wa.me/573227178417?text=Hola Ronald, quisiera una cotización" target="_blank" style="color:#25D366">Cotizar por WhatsApp</a><br><br>⚡ Primera consulta <strong>sin costo</strong>.'; }},
+  { t:['colombia','colombiana','país','pais','latinoamérica','latinoamerica','latam','america latina'], r: function(){ return '🇨🇴 Ronald está 100% enfocado en <strong>Colombia</strong> y América Latina:<br><br>🏙️ <strong>116 municipios</strong> de Cundinamarca cubiertos<br>📡 Conectividad rural: <strong>37%</strong> vs urbano <strong>79%</strong><br>🎓 Deserción escolar Cundinamarca: <strong>3.8%</strong><br>📚 Meta: reducir deserción un <strong>53%</strong> con IA<br><br>El modelo es escalable a toda América Latina. 🌎'; }},
+  { t:['ia generativa','chatgpt','gpt','gemini','claude','llm','modelos de lenguaje','llama'], r: function(){ return '🧠 Ronald es experto en <strong>IA Generativa</strong> y modelos de lenguaje (LLMs).<br><br>Ha analizado y comparado modelos como GPT-4, Gemini, Claude y Llama en sus publicaciones de La República.<br><br>Su enfoque es aplicar estos modelos a <strong>problemas reales de Colombia</strong>, especialmente en educación y gobierno.<br><br>¿Quieres saber cómo puede ayudarte con IA Generativa?'; }},
+  { t:['gracias','muchas gracias','perfecto','excelente','genial','listo','ok gracias','muy bien'], r: function(){ return '😊 ¡Con mucho gusto'+(userName?' '+userName:'')+' !<br><br>Si necesitas algo más, aquí estaré. También puedes contactar a Ronald directamente:<br><br>📱 <a href="https://wa.me/573227178417" target="_blank" style="color:#25D366">WhatsApp +57 322 717 8417</a><br><br>¡Hasta pronto! 🚀'; }},
+  { t:['adiós','adios','chao','bye','hasta luego','nos vemos'], r: function(){ return '👋 ¡Hasta luego'+(userName?' '+userName:'')+' ! Fue un placer.<br><br>Recuerda que Ronald siempre está disponible:<br>📱 <a href="https://wa.me/573227178417" target="_blank" style="color:#25D366">+57 322 717 8417</a>'; }}
+];
 
 function toggleChat() {
   chatOpen = !chatOpen;
@@ -1320,7 +1297,7 @@ function toggleChat() {
     var msgs = document.getElementById('chatMessages');
     if (msgs && msgs.children.length === 0) {
       setTimeout(function() {
-        addBotMsg('👋 ¡Hola! Soy el asistente de <strong>Ronald Medina</strong>, experto en IA.<br><br>Puedo responder cualquier pregunta sobre sus <strong>servicios</strong>, <strong>investigación</strong>, <strong>publicaciones</strong> o cómo <strong>contactarlo</strong>. ¿En qué te ayudo? 🚀');
+        addBotMsg('👋 ¡Hola! Soy el asistente de <strong>Ronald Medina</strong>, experto en IA y transformación digital en Colombia.<br><br>¿En qué te puedo ayudar hoy? Puedes preguntarme sobre sus <strong>servicios</strong>, <strong>investigación doctoral</strong>, <strong>publicaciones</strong> o cómo <strong>contactarlo</strong>. 🚀');
       }, 400);
     }
   }
@@ -1329,11 +1306,21 @@ function toggleChat() {
 function addBotMsg(html) {
   var msgs = document.getElementById('chatMessages');
   if (!msgs) return;
-  var div = document.createElement('div');
-  div.style.cssText = 'display:flex;gap:.5rem;align-items:flex-start;margin-bottom:.75rem';
-  div.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#1565C0,#00B4D8);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">🤖</div><div style="background:#F8FAFD;border:1px solid #E3EAF4;padding:.6rem .9rem;border-radius:0 12px 12px 12px;font-size:.76rem;line-height:1.6;color:#1A2332;max-width:85%">' + html + '</div>';
-  msgs.appendChild(div);
+  var typing = document.createElement('div');
+  typing.id = 'typing-indicator';
+  typing.style.cssText = 'display:flex;gap:.5rem;align-items:center;margin-bottom:.75rem';
+  typing.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#1565C0,#00B4D8);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">🤖</div><div style="background:#F8FAFD;border:1px solid #E3EAF4;padding:.6rem .9rem;border-radius:0 12px 12px 12px;font-size:.85rem;color:#5A6A80">⬤ ⬤ ⬤</div>';
+  msgs.appendChild(typing);
   msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(function() {
+    var t = document.getElementById('typing-indicator');
+    if (t) t.remove();
+    var div = document.createElement('div');
+    div.style.cssText = 'display:flex;gap:.5rem;align-items:flex-start;margin-bottom:.75rem';
+    div.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#1565C0,#00B4D8);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">🤖</div><div style="background:#F8FAFD;border:1px solid #E3EAF4;padding:.6rem .9rem;border-radius:0 12px 12px 12px;font-size:.76rem;line-height:1.6;color:#1A2332;max-width:85%">' + html + '</div>';
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 900);
 }
 
 function addUserMsg(txt) {
@@ -1346,20 +1333,14 @@ function addUserMsg(txt) {
   msgs.scrollTop = msgs.scrollHeight;
 }
 
-function showTyping() {
-  var msgs = document.getElementById('chatMessages');
-  if (!msgs) return;
-  var typing = document.createElement('div');
-  typing.id = 'typing-indicator';
-  typing.style.cssText = 'display:flex;gap:.5rem;align-items:center;margin-bottom:.75rem';
-  typing.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#1565C0,#00B4D8);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">🤖</div><div style="background:#F8FAFD;border:1px solid #E3EAF4;padding:.6rem .9rem;border-radius:0 12px 12px 12px;font-size:.85rem;color:#5A6A80;letter-spacing:.15em">⬤ ⬤ ⬤</div>';
-  msgs.appendChild(typing);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-function hideTyping() {
-  var t = document.getElementById('typing-indicator');
-  if (t) t.remove();
+function getResponse(inp) {
+  var lower = inp.toLowerCase().trim();
+  for (var i = 0; i < KB.length; i++) {
+    if (KB[i].t.some(function(t) { return lower.includes(t); })) {
+      return KB[i].r(inp);
+    }
+  }
+  return '🤔 Entiendo tu consulta. Para darte la mejor respuesta, te recomiendo contactar a Ronald directamente:<br><br>📧 <a href="mailto:ronald.medina.corp@gmail.com?subject=Consulta&body='+encodeURIComponent(inp)+'" style="color:#1565C0">Enviar por email</a><br>📱 <a href="https://wa.me/573227178417?text='+encodeURIComponent('Hola Ronald, tengo una consulta: '+inp)+'" target="_blank" style="color:#25D366">Enviar por WhatsApp</a><br><br>También puedes preguntar sobre: <strong>servicios, contacto, investigación, publicaciones o IA</strong>.';
 }
 
 function sendMessage() {
@@ -1370,60 +1351,8 @@ function sendMessage() {
   addUserMsg(txt);
   input.value = '';
   input.style.height = 'auto';
-  chatHistory.push({ role: 'user', parts: [{ text: txt }] });
-  showTyping();
-  callAI();
-}
-
-function callAI() {
-  var API_KEY = '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';
-
-  var messages = [{ role: 'system', content: SYSTEM_PROMPT }];
-  chatHistory.forEach(function(m) {
-    messages.push({
-      role: m.role === 'model' ? 'assistant' : 'user',
-      content: m.parts[0].text
-    });
-  });
-
-  fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + API_KEY,
-      'HTTP-Referer': 'https://ronalete.github.io/propuesta-ronald',
-      'X-Title': 'EdIA Colombia - Ronald Medina'
-    },
-    body: JSON.stringify({
-      model: 'meta-llama/llama-3.1-8b-instruct:free',
-      messages: messages,
-      max_tokens: 500
-    })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    hideTyping();
-    var reply = '';
-    if (data.choices && data.choices[0] && data.choices[0].message) {
-      reply = data.choices[0].message.content;
-    }
-    if (!reply) {
-      reply = '⚠️ Sin respuesta en este momento. Contacta a Ronald directamente:\n📧 ronald.medina.corp@gmail.com\n📱 +57 322 717 8417';
-    }
-    reply = reply
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/\n/g, '<br>');
-    chatHistory.push({ role: 'model', parts: [{ text: reply }] });
-    addBotMsg(reply);
-  })
-  .catch(function() {
-    hideTyping();
-    addBotMsg('⚠️ Error de conexión. Contacta a Ronald:<br>📧 ronald.medina.corp@gmail.com<br>📱 <a href="https://wa.me/573227178417" target="_blank" style="color:#25D366">+57 322 717 8417</a>');
-  });
+  var resp = getResponse(txt);
+  setTimeout(function() { addBotMsg(resp); }, 300);
 }
 
 function sendQuick(txt) {
@@ -1441,6 +1370,7 @@ function autoResize(el) {
   el.style.height = Math.min(el.scrollHeight, 90) + 'px';
 }
 </script>
+
 
 
 
