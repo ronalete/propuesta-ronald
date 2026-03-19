@@ -947,10 +947,18 @@ body{background:var(--off);color:var(--text);font-family:var(--font);overflow-x:
  · Fusagasugá, Cundinamarca, Colombia<br>
   <span style="display:block;margin-top:.4rem;color:rgba(255,255,255,.2)">Datos estadísticos: MEN · DANE · SPADIES · SIMAT · MinTIC · IBD · La Silla Vacía · UIT · 2024</span>
 </div>
- <div style="margin-top:1rem;display:flex;align-items:center;justify-content:center;gap:.75rem">
-  <span style="color:rgba(255,255,255,.4);font-size:.65rem">👁️ Visitas totales:</span>
-  <img src="https://visitor-badge.laobi.icu/badge?page_id=ronalete.propuesta-ronald&left_color=%230A1628&right_color=%2300B4D8&left_text=Visitas" alt="Visitas" style="height:20px;border-radius:4px">
+<div style="margin-top:1rem;display:flex;align-items:center;justify-content:center;gap:.75rem">
+  <span style="color:rgba(255,255,255,.4);font-size:.65rem">👁️ Visitas totales: <strong id="visit-count" style="color:#00B4D8">...</strong></span>
 </div>
+<script>
+(function(){
+  var key = 'edia_visits';
+  var count = parseInt(localStorage.getItem(key) || '0') + 1;
+  localStorage.setItem(key, count);
+  var el = document.getElementById('visit-count');
+  if(el) el.textContent = count.toLocaleString('es-CO');
+})();
+</script>
 
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
