@@ -1372,44 +1372,57 @@ function sendMessage() {
   input.style.height = 'auto';
   chatHistory.push({ role: 'user', parts: [{ text: txt }] });
   showTyping();
-  callGemini();
+  callAI();
 }
 
-function callGemini() {
-  var API_KEY = 'AIzaSyAgyoZXOObkd_vkLKmWby_vT_HtLa9DbJw';
-  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + API_KEY;
+function callAI() {
+  var API_KEY = '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';
 
-  var body = {
-    system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-    contents: chatHistory
-  };
+  var messages = [{ role: 'system', content: SYSTEM_PROMPT }];
+  chatHistory.forEach(function(m) {
+    messages.push({
+      role: m.role === 'model' ? 'assistant' : 'user',
+      content: m.parts[0].text
+    });
+  });
 
-  fetch(url, {
+  fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + API_KEY,
+      'HTTP-Referer': 'https://ronalete.github.io/propuesta-ronald',
+      'X-Title': 'EdIA Colombia - Ronald Medina'
+    },
+    body: JSON.stringify({
+      model: 'meta-llama/llama-3.1-8b-instruct:free',
+      messages: messages,
+      max_tokens: 500
+    })
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
     hideTyping();
     var reply = '';
-    if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
-      reply = data.candidates[0].content.parts[0].text;
+    if (data.choices && data.choices[0] && data.choices[0].message) {
+      reply = data.choices[0].message.content;
     }
     if (!reply) {
-      reply = '⚠️ No pude obtener respuesta. Contacta a Ronald:\n📧 ronald.medina.corp@gmail.com\n📱 +57 322 717 8417';
+      reply = '⚠️ Sin respuesta en este momento. Contacta a Ronald directamente:\n📧 ronald.medina.corp@gmail.com\n📱 +57 322 717 8417';
     }
     reply = reply
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g,'<em>$1</em>')
-      .replace(/\n/g,'<br>');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/\n/g, '<br>');
     chatHistory.push({ role: 'model', parts: [{ text: reply }] });
     addBotMsg(reply);
   })
-  .catch(function(err) {
+  .catch(function() {
     hideTyping();
-    addBotMsg('⚠️ Error de conexión. Contacta a Ronald directamente:<br>📧 ronald.medina.corp@gmail.com<br>📱 <a href="https://wa.me/573227178417" target="_blank" style="color:#25D366">+57 322 717 8417</a>');
+    addBotMsg('⚠️ Error de conexión. Contacta a Ronald:<br>📧 ronald.medina.corp@gmail.com<br>📱 <a href="https://wa.me/573227178417" target="_blank" style="color:#25D366">+57 322 717 8417</a>');
   });
 }
 
