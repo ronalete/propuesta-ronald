@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>Ronald Yesid Medina Quiroga · EdIA Doctoral</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ─── TOKENS ─────────────────────────────────────────── */
+:root{
+  --b50:#EFF6FF; --b100:#DBEAFE; --b200:#BFDBFE; --b300:#93C5FD;
+  --b500:#3B82F6; --b600:#2563EB; --b700:#1D4ED8; --b900:#1E3A5F;
+  --g50:#F0FDF4; --g500:#22C55E; --g700:#15803D;
+  --a50:#FFFBEB; --a500:#F59E0B; --a700:#B45309;
+  --r50:#FEF2F2; --r500:#EF4444; --r700:#B91C1C;
+  --s50:#F8FAFC; --s100:#F1F5F9; --s200:#E2E8F0; --s300:#CBD5E1;
+  --s400:#94A3B8; --s600:#475569; --s700:#334155; --s900:#0F172A;
+  --white:#FFFFFF;
+  --radius:10px; --radius-lg:16px; --radius-xl:22px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow:0 4px 12px rgba(0,0,0,.08);
+  --shadow-lg:0 12px 32px rgba(0,0,0,.1);
+  --font:'Plus Jakarta Sans',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;scroll-behavior:smooth}
+body{background:var(--s50);color:var(--s700);font-family:var(--font);min-height:100vh;overflow-x:hidden}
+
+/* ─── LAYOUT SHELL ───────────────────────────────────── */
+#shell{display:grid;grid-template-rows:auto auto 1fr;min-height:100vh}
+
+/* ─── TOP BAR ────────────────────────────────────────── */
+#topbar{background:var(--b900);color:white;padding:.55rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.2)}
+.tb-left{display:flex;align-items:center;gap:.75rem}
+.tb-avatar{width:34px;height:34px;border-radius:8px;background:var(--b500);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.78rem;letter-spacing:-.03em;flex-shrink:0}
+.tb-name{font-size:.82rem;font-weight:700;line-height:1.2}
+.tb-sub{font-size:.62rem;color:rgba(255,255,255,.5);font-weight:400}
+.tb-right{display:flex;align-items:center;gap:.5rem}
+.tb-badge{background:rgba(59,130,246,.25);border:1px solid rgba(59,130,246,.4);color:var(--b200);font-size:.6rem;font-weight:700;padding:.22rem .65rem;border-radius:100px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.tb-urgent{background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.35);color:#FCA5A5;animation:urgPulse 2s infinite}
+@keyframes urgPulse{0%,100%{opacity:1}50%{opacity:.7}}
+
+/* ─── TAB BAR ────────────────────────────────────────── */
+#tabbar{background:var(--white);border-bottom:1px solid var(--s200);padding:0 1.5rem;display:flex;gap:.1rem;overflow-x:auto;-webkit-overflow-scrolling:touch;position:sticky;top:51px;z-index:190;scrollbar-width:none}
+#tabbar::-webkit-scrollbar{display:none}
+.tab{display:flex;align-items:center;gap:.4rem;padding:.7rem 1rem;font-size:.75rem;font-weight:600;color:var(--s400);border:none;background:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s;font-family:var(--font);letter-spacing:.01em}
+.tab:hover{color:var(--s700)}
+.tab.active{color:var(--b600);border-bottom-color:var(--b600)}
+.tab .ti{font-size:.85rem}
+.tab .tc{font-size:.65rem;background:var(--s100);color:var(--s400);padding:.1rem .35rem;border-radius:100px;font-weight:700}
+.tab.active .tc{background:var(--b100);color:var(--b700)}
+
+/* ─── MAIN CONTENT ───────────────────────────────────── */
+#main{padding:1.5rem;max-width:1100px;margin:0 auto;width:100%}
+
+/* ─── PANELS ─────────────────────────────────────────── */
+.panel{display:none;animation:fadeIn .25s ease}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── PANEL HEADER ───────────────────────────────────── */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--s200)}
+.ph-left{}
+.ph-eyebrow{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--b500);margin-bottom:.3rem;display:flex;align-items:center;gap:.4rem}
+.ph-eyebrow::before{content:'';width:1.5rem;height:2px;background:var(--b500)}
+.ph-title{font-family:'Lora',serif;font-size:1.45rem;font-weight:600;color:var(--s900);line-height:1.2;letter-spacing:-.02em}
+.ph-title em{color:var(--b600);font-style:italic}
+.ph-desc{font-size:.78rem;color:var(--s400);margin-top:.35rem;line-height:1.6;max-width:55ch}
+.ph-right{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:flex-end;flex-shrink:0}
+
+/* ─── CARDS ──────────────────────────────────────────── */
+.cards{display:grid;gap:1rem}
+.cards-3{grid-template-columns:repeat(3,1fr)}
+.cards-2{grid-template-columns:repeat(2,1fr)}
+.cards-4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--white);border:1px solid var(--s200);border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow-sm);transition:box-shadow .2s,transform .2s}
+.card:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+.card-accent-top{border-top:3px solid var(--b500)}
+.card-accent-blue{border-top-color:var(--b500)}
+.card-accent-red{border-top-color:var(--r500)}
+.card-accent-amber{border-top-color:var(--a500)}
+.card-accent-green{border-top-color:var(--g500)}
+
+/* ─── STAT BLOCK ─────────────────────────────────────── */
+.stat-num{font-family:'Lora',serif;font-size:2.2rem;font-weight:600;line-height:1;letter-spacing:-.03em;margin:.35rem 0 .25rem}
+.stat-lbl{font-size:.75rem;color:var(--s600);line-height:1.5}
+.stat-src{font-size:.6rem;color:var(--s300);margin-top:.5rem;font-style:italic}
+.stat-badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.6rem;font-weight:700;padding:.18rem .55rem;border-radius:100px;margin-top:.4rem}
+.badge-red{background:var(--r50);color:var(--r700)}
+.badge-amber{background:var(--a50);color:var(--a700)}
+.badge-blue{background:var(--b50);color:var(--b700)}
+.badge-green{background:var(--g50);color:var(--g700)}
+
+/* ─── SECTION LABEL ──────────────────────────────────── */
+.slabel{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--s400);margin-bottom:.6rem;margin-top:1.2rem;display:flex;align-items:center;gap:.5rem}
+.slabel::after{content:'';flex:1;height:1px;background:var(--s200)}
+
+/* ─── INFO ROW ───────────────────────────────────────── */
+.info-box{background:var(--b50);border:1px solid var(--b200);border-radius:var(--radius);padding:1rem 1.2rem;font-size:.8rem;color:var(--b700);line-height:1.7}
+.info-box strong{color:var(--b900)}
+.warn-box{background:var(--r50);border:1px solid rgba(239,68,68,.25);border-radius:var(--radius);padding:.9rem 1.1rem;font-size:.78rem;color:var(--r700);line-height:1.6;margin-bottom:1rem}
+.warn-box strong{font-weight:700}
+
+/* ─── CHART CARD ─────────────────────────────────────── */
+.chart-card{background:var(--white);border:1px solid var(--s200);border-radius:var(--radius-lg);padding:1.2rem;box-shadow:var(--shadow-sm)}
+.chart-card h4{font-size:.8rem;font-weight:700;color:var(--s700);margin-bottom:.15rem}
+.chart-card p{font-size:.67rem;color:var(--s400);margin-bottom:1rem}
+.cw{height:170px;position:relative}
+
+/* ─── PILL LIST ──────────────────────────────────────── */
+.pill-list{display:flex;flex-direction:column;gap:.6rem}
+.pill{display:flex;align-items:flex-start;gap:.8rem;padding:1rem;background:var(--white);border:1px solid var(--s200);border-radius:var(--radius);transition:border-color .2s,box-shadow .2s}
+.pill:hover{border-color:var(--b300);box-shadow:var(--shadow-sm)}
+.pill-icon{font-size:1.2rem;flex-shrink:0;margin-top:.05rem}
+.pill-title{font-size:.8rem;font-weight:700;color:var(--s900);margin-bottom:.2rem}
+.pill-desc{font-size:.73rem;color:var(--s500,#64748b);line-height:1.55}
+
+/* ─── PROGRESS BARS ──────────────────────────────────── */
+.prog-item{margin-bottom:.85rem}
+.prog-row{display:flex;justify-content:space-between;font-size:.73rem;margin-bottom:.3rem;color:var(--s700)}
+.prog-pct{font-weight:700;color:var(--b600)}
+.prog-bar{height:5px;background:var(--s100);border-radius:100px;overflow:hidden}
+.prog-fill{height:100%;border-radius:100px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+
+/* ─── TIMELINE ───────────────────────────────────────── */
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:1rem;position:relative;padding-bottom:1rem}
+.tl-item:last-child{padding-bottom:0}
+.tl-left{display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0}
+.tl-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:white;flex-shrink:0;z-index:1}
+.tl-line{flex:1;width:1px;background:var(--s200);margin-top:2px}
+.tl-item:last-child .tl-line{display:none}
+.tl-right{flex:1;padding-top:.2rem;padding-bottom:.5rem}
+.tl-title{font-size:.8rem;font-weight:700;color:var(--s900);margin-bottom:.15rem}
+.tl-desc{font-size:.72rem;color:var(--s500,#64748b);line-height:1.5}
+.tl-meta{font-size:.62rem;color:var(--s400);margin-top:.25rem;font-weight:600}
+
+/* ─── STEP FLOW ──────────────────────────────────────── */
+.step-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem}
+.sf-item{text-align:center;position:relative}
+.sf-item:not(:last-child)::after{content:'→';position:absolute;top:1rem;right:-.5rem;color:var(--s300);font-size:.8rem;transform:translateY(-50%)}
+.sf-num{width:36px;height:36px;border-radius:50%;background:var(--b900);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;margin:0 auto .6rem;transition:background .25s}
+.sf-item:hover .sf-num{background:var(--b600)}
+.sf-title{font-size:.72rem;font-weight:700;color:var(--s800,#1e293b);margin-bottom:.2rem}
+.sf-desc{font-size:.63rem;color:var(--s400);line-height:1.45}
+.sf-dur{font-size:.6rem;background:var(--s100);color:var(--s400);padding:.15rem .5rem;border-radius:100px;margin-top:.35rem;display:inline-block}
+
+/* ─── UNI CARDS ──────────────────────────────────────── */
+.uni-flag{font-size:1.3rem;margin-bottom:.5rem}
+.uni-name{font-size:.88rem;font-weight:700;color:var(--s900);margin-bottom:.1rem}
+.uni-prog{font-size:.68rem;color:var(--s400);margin-bottom:.9rem;font-style:italic}
+.sb{margin-bottom:.6rem}
+.sbr{display:flex;justify-content:space-between;font-size:.62rem;color:var(--s500,#64748b);margin-bottom:.22rem}
+.sbt{height:4px;background:var(--s100);border-radius:100px;overflow:hidden}
+.sbf{height:100%;border-radius:100px;transition:width 1.4s cubic-bezier(.4,0,.2,1);background:var(--b500)}
+.sbf-g{background:var(--g500)} .sbf-a{background:var(--a500)}
+.utag-row{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.7rem}
+.utag{font-size:.58rem;padding:.18rem .5rem;border-radius:100px;background:var(--s100);color:var(--s500,#64748b)}
+.recommended{border:1.5px solid var(--b300);background:var(--b50)}
+
+/* ─── PUB CARD ───────────────────────────────────────── */
+.pub-card{background:var(--white);border:1px solid var(--s200);border-radius:var(--radius-lg);padding:1.2rem;transition:all .25s;text-decoration:none;display:block;color:inherit}
+.pub-card:hover{border-color:var(--b300);box-shadow:var(--shadow);transform:translateY(-2px)}
+.pub-source-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem}
+.pub-badge{background:var(--b600);color:white;font-size:.58rem;font-weight:800;padding:.2rem .65rem;border-radius:100px;letter-spacing:.06em;text-transform:uppercase}
+.pub-date{font-size:.62rem;color:var(--s400)}
+.pub-title{font-family:'Lora',serif;font-size:.98rem;font-weight:600;color:var(--s900);line-height:1.4;margin-bottom:.7rem}
+.pub-excerpt{font-size:.75rem;line-height:1.7;color:var(--s500,#64748b);border-left:2px solid var(--b300);padding-left:.8rem;font-style:italic}
+.pub-link{display:inline-flex;align-items:center;gap:.35rem;font-size:.7rem;font-weight:700;color:var(--b600);margin-top:.8rem;text-decoration:none;transition:gap .2s}
+.pub-link:hover{gap:.6rem}
+
+/* ─── CONTACT ITEMS ──────────────────────────────────── */
+.contact-list{display:flex;flex-direction:column;gap:.6rem}
+.ci{display:flex;align-items:center;gap:.9rem;padding:.85rem 1rem;background:var(--white);border:1px solid var(--s200);border-radius:var(--radius);text-decoration:none;color:inherit;transition:border-color .2s,box-shadow .2s}
+.ci:hover{border-color:var(--b300);box-shadow:var(--shadow-sm)}
+.ci-icon{width:32px;height:32px;border-radius:8px;background:var(--b50);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.ci-text{font-size:.78rem;color:var(--s700);line-height:1.4}
+.ci-text span{display:block;font-size:.6rem;color:var(--s400);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:.1rem}
+
+/* ─── CHIP ROW ───────────────────────────────────────── */
+.chip-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
+.chip{font-size:.67rem;font-weight:600;padding:.28rem .7rem;border-radius:100px;border:1px solid}
+.chip-blue{background:var(--b50);color:var(--b700);border-color:var(--b200)}
+.chip-green{background:var(--g50);color:var(--g700);border-color:rgba(34,197,94,.25)}
+.chip-amber{background:var(--a50);color:var(--a700);border-color:rgba(245,158,11,.25)}
+.chip-red{background:var(--r50);color:var(--r700);border-color:rgba(239,68,68,.25)}
+.chip-slate{background:var(--s100);color:var(--s600);border-color:var(--s200)}
+
+/* ─── TWO COL ────────────────────────────────────────── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+
+/* ─── QUOTE ──────────────────────────────────────────── */
+.blockquote{background:var(--b50);border-left:3px solid var(--b400,#60a5fa);border-radius:0 var(--radius) var(--radius) 0;padding:1rem 1.2rem;margin:1rem 0}
+.blockquote p{font-family:'Lora',serif;font-style:italic;font-size:.9rem;color:var(--b900);line-height:1.6}
+.blockquote cite{font-size:.68rem;color:var(--s400);margin-top:.5rem;display:block;font-style:normal;font-weight:600}
+
+/* ─── URGENCY BOX ────────────────────────────────────── */
+.urgency{background:var(--r50);border:1px solid rgba(239,68,68,.25);border-radius:var(--radius-lg);padding:1.2rem;margin-bottom:1.2rem}
+.urg-header{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem}
+.urg-icon{font-size:1.5rem}
+.urg-title{font-size:.88rem;font-weight:800;color:var(--r700)}
+.urg-sub{font-size:.68rem;color:var(--r500);font-weight:600}
+
+/* ─── IMPACT GRID ────────────────────────────────────── */
+.impact-card{background:var(--white);border:1px solid var(--s200);border-radius:var(--radius);padding:1rem;text-align:center}
+.impact-num{font-family:'Lora',serif;font-size:2rem;font-weight:600;line-height:1;margin:.3rem 0}
+.impact-lbl{font-size:.7rem;color:var(--s400);line-height:1.5}
+
+/* ─── TECH ITEM ──────────────────────────────────────── */
+.tech-item{display:flex;align-items:center;gap:.7rem;padding:.65rem .9rem;background:var(--s50);border:1px solid var(--s200);border-radius:8px;font-size:.75rem;color:var(--s700);transition:background .2s}
+.tech-item:hover{background:var(--b50);border-color:var(--b200)}
+
+/* ─── MINI HERO ──────────────────────────────────────── */
+#hero-banner{background:var(--b900);padding:2rem 1.5rem;position:relative;overflow:hidden}
+.hb-mesh{position:absolute;inset:0;background:radial-gradient(ellipse 60% 100% at 80% 50%,rgba(59,130,246,.2),transparent 70%),radial-gradient(ellipse 40% 60% at 20% 50%,rgba(37,99,235,.1),transparent 60%);pointer-events:none}
+.hb-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:30px 30px;pointer-events:none}
+.hb-inner{position:relative;z-index:2;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center}
+.hb-left{}
+.hb-eyebrow{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--b300);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.hb-title{font-family:'Lora',serif;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:600;color:white;line-height:1.15;margin-bottom:.7rem;letter-spacing:-.02em}
+.hb-title em{color:#93C5FD;font-style:italic}
+.hb-desc{font-size:.8rem;color:rgba(255,255,255,.6);max-width:50ch;line-height:1.7;margin-bottom:1.2rem}
+.hb-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.2rem}
+.hb-chip{font-size:.62rem;font-weight:600;padding:.25rem .7rem;border-radius:100px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8)}
+.hb-chip.hl{background:rgba(59,130,246,.25);border-color:rgba(59,130,246,.5);color:var(--b200)}
+.hb-stats{display:flex;gap:1.5rem}
+.hbs{text-align:center}
+.hbs-num{font-family:'Lora',serif;font-size:1.5rem;font-weight:600;color:white;line-height:1}
+.hbs-lbl{font-size:.58rem;color:rgba(255,255,255,.45);margin-top:.15rem;text-transform:uppercase;letter-spacing:.05em}
+/* 3D sphere mini */
+.hb-right{position:relative;width:160px;height:160px;flex-shrink:0}
+.mini-sphere{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(96,165,250,.5),rgba(37,99,235,.25) 50%,rgba(29,78,216,.1) 80%);border:1px solid rgba(96,165,250,.4);box-shadow:0 0 40px rgba(59,130,246,.3),inset 0 0 20px rgba(96,165,250,.1);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;animation:sGlow 4s ease-in-out infinite}
+@keyframes sGlow{0%,100%{box-shadow:0 0 40px rgba(59,130,246,.3)}50%{box-shadow:0 0 70px rgba(59,130,246,.5)}}
+.ms-ring{position:absolute;top:50%;left:50%;border-radius:50%;border:1px solid rgba(96,165,250,.2);transform:translate(-50%,-50%)}
+.r1{width:140px;height:140px;animation:rPulse 3s ease-in-out infinite}
+.r2{width:160px;height:160px;animation:rPulse 3s ease-in-out infinite .6s}
+@keyframes rPulse{0%,100%{opacity:.3}50%{opacity:.6}}
+.ms-inner{text-align:center;color:white}
+.ms-icon{font-size:1.8rem}
+.ms-lbl{font-size:.55rem;color:rgba(255,255,255,.5);margin-top:.2rem;text-transform:uppercase;letter-spacing:.06em}
+
+/* ─── RESPONSIVE ─────────────────────────────────────── */
+@media(max-width:700px){
+  .cards-3,.cards-4,.step-flow,.two-col,.three-col{grid-template-columns:1fr}
+  .cards-2{grid-template-columns:1fr}
+  .hb-right{display:none}
+  .hb-inner{grid-template-columns:1fr}
+  #main{padding:1rem}
+  .sf-item:not(:last-child)::after{display:none}
+  .tab{padding:.6rem .7rem;font-size:.7rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ─── TOP BAR ─────────────────────────────────────── -->
+<div id="topbar">
+  <div class="tb-left">
+    <div class="tb-avatar">RM</div>
+    <div>
+      <div class="tb-name">Ronald Yesid Medina Quiroga</div>
+      <div class="tb-sub">Mg. Gerencia de Proyectos · Ing. de Sistemas · ITI Fusagasugá</div>
+    </div>
+  </div>
+  <div class="tb-right">
+    <div class="tb-badge">EdIA Territorial</div>
+    <div class="tb-badge tb-urgent">⏰ Cierre: 20 Abr 2026</div>
+  </div>
+</div>
+
+<!-- ─── TAB BAR ─────────────────────────────────────── -->
+<div id="tabbar">
+  <button class="tab active" onclick="showTab('t-home')"><span class="ti">🏠</span> Inicio</button>
+  <button class="tab" onclick="showTab('t-problema')"><span class="ti">🔍</span> Problema <span class="tc">3</span></button>
+  <button class="tab" onclick="showTab('t-brecha')"><span class="ti">📡</span> Brecha Digital <span class="tc">4</span></button>
+  <button class="tab" onclick="showTab('t-propuesta')"><span class="ti">🧠</span> Propuesta</button>
+  <button class="tab" onclick="showTab('t-metodologia')"><span class="ti">📋</span> Metodología <span class="tc">5</span></button>
+  <button class="tab" onclick="showTab('t-proyecciones')"><span class="ti">📈</span> Proyecciones</button>
+  <button class="tab" onclick="showTab('t-universidades')"><span class="ti">🎓</span> Universidades <span class="tc">3</span></button>
+  <button class="tab" onclick="showTab('t-publicaciones')"><span class="ti">📰</span> La República <span class="tc">2</span></button>
+  <button class="tab" onclick="showTab('t-perfil')"><span class="ti">👤</span> Perfil</button>
+  <button class="tab" onclick="showTab('t-contacto')"><span class="ti">📬</span> Contacto</button>
+</div>
+
+<!-- ─── HERO BANNER ─────────────────────────────────── -->
+<div id="hero-banner">
+  <div class="hb-mesh"></div>
+  <div class="hb-grid"></div>
+  <div class="hb-inner">
+    <div class="hb-left">
+      <div class="hb-eyebrow">🎯 Convocatoria 975 · Minciencias 2026</div>
+      <h1 class="hb-title">IA + Análisis Geoespacial<br>para la <em>Educación Pública</em></h1>
+      <p class="hb-desc">Modelo predictivo para cerrar brechas educativas en Cundinamarca — y construir la infraestructura de datos que Colombia necesita para la era de la inteligencia artificial.</p>
+      <div class="hb-chips">
+        <span class="hb-chip hl">🤖 IA Aplicada</span>
+        <span class="hb-chip hl">🗺️ GIS Predictivo</span>
+        <span class="hb-chip">Doctorado Internacional</span>
+        <span class="hb-chip">Sector Público</span>
+        <span class="hb-chip">Cundinamarca</span>
+      </div>
+      <div class="hb-stats">
+        <div class="hbs"><div class="hbs-num">38.4%</div><div class="hbs-lbl">Brecha digital 🇨🇴</div></div>
+        <div class="hbs"><div class="hbs-num">−53%</div><div class="hbs-lbl">Deserción proyectada</div></div>
+        <div class="hbs"><div class="hbs-num">116</div><div class="hbs-lbl">Municipios CND</div></div>
+        <div class="hbs"><div class="hbs-num">$368B</div><div class="hbs-lbl">Beca COP</div></div>
+      </div>
+    </div>
+    <div class="hb-right">
+      <div class="ms-ring r1"></div>
+      <div class="ms-ring r2"></div>
+      <div class="mini-sphere">
+        <div class="ms-inner">
+          <div class="ms-icon">🧠</div>
+          <div class="ms-lbl">EdIA</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MAIN ─────────────────────────────────────────── -->
+<div id="shell">
+<div id="main">
+
+<!-- ══════ HOME ══════ -->
+<div class="panel active" id="t-home">
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-eyebrow">Bienvenido</div>
+      <div class="ph-title">Propuesta <em>doctoral</em> — navegación rápida</div>
+      <div class="ph-desc">Usa las pestañas para explorar cada sección. Toda la información organizada en un solo lugar.</div>
+    </div>
+  </div>
+
+  <div class="warn-box">⏰ <strong>Urgente:</strong> La Convocatoria 975 de Minciencias cierra el <strong>20 de abril de 2026 a las 4:00 p.m.</strong> — quedan aproximadamente 33 días.</div>
+
+  <div class="slabel">🗺️ Mapa de la propuesta</div>
+  <div class="cards cards-3" style="margin-bottom:1.2rem">
+    <div class="card card-accent-top card-accent-blue" style="cursor:pointer" onclick="showTab('t-problema')">
+      <div style="font-size:1.4rem;margin-bottom:.5rem">🔍</div>
+      <div style="font-size:.82rem;font-weight:700;color:var(--s900);margin-bottom:.25rem">El Problema</div>
+      <div style="font-size:.72rem;color:var(--s400);line-height:1.5">Brechas educativas en Colombia y Cundinamarca · 3 indicadores clave con datos oficiales MEN, DANE y SPADIES.</div>
+      <div style="margin-top:.8rem;font-size:.65rem;font-weight:700;color:var(--b600)">Ver indicadores →</div>
+    </div>
+    <div class="card card-accent-top card-accent-red" style="cursor:pointer" onclick="showTab('t-brecha')">
+      <div style="font-size:1.4rem;margin-bottom:.5rem">📡</div>
+      <div style="font-size:.82rem;font-weight:700;color:var(--s900);margin-bottom:.25rem">Brecha Digital</div>
+      <div style="font-size:.72rem;color:var(--s400);line-height:1.5">Colombia vs. Latinoamérica · 4 métricas MinTIC · Comparativo regional de conectividad e IA.</div>
+      <div style="margin-top:.8rem;font-size:.65rem;font-weight:700;color:var(--r700)">Ver brecha →</div>
+    </div>
+    <div class="card card-accent-top card-accent-blue" style="cursor:pointer" onclick="showTab('t-propuesta')">
+      <div style="font-size:1.4rem;margin-bottom:.5rem">🧠</div>
+      <div style="font-size:.82rem;font-weight:700;color:var(--s900);margin-bottom:.25rem">Propuesta Doctoral</div>
+      <div style="font-size:.72rem;color:var(--s400);line-height:1.5">Título oficial · Misiones Minciencias · Stack tecnológico · Productos esperados.</div>
+      <div style="margin-top:.8rem;font-size:.65rem;font-weight:700;color:var(--b600)">Ver propuesta →</div>
+    </div>
+    <div class="card card-accent-top card-accent-green" style="cursor:pointer" onclick="showTab('t-metodologia')">
+      <div style="font-size:1.4rem;margin-bottom:.5rem">📋</div>
+      <div style="font-size:.82rem;font-weight:700;color:var(--s900);margin-bottom:.25rem">Metodología</div>
+      <div style="font-size:.72rem;color:var(--s400);line-height:1.5">5 fases · 3 años · Plan doctoral detallado · Cronograma de aplicación urgente.</div>
+      <div style="margin-top:.8rem;font-size:.65rem;font-weight:700;color:var(--g700)">Ver metodología →</div>
+    </div>
+    <div class="card card-accent-top card-accent-amber" style="cursor:pointer" onclick="showTab('t-proyecciones')">
+      <div style="font-size:1.4rem;margin-bottom:.5rem">📈</div>
+      <div style="font-size:.82rem;font-weight:700;color:var(--s900);margin-bottom:.25rem">Proyecciones</div>
+      <div style="font-size:.72rem;color:var(--s400);line-height:1.5">Impacto 2024–2030 · Gráficas comparativas · 6 indicadores de resultado con cifras proyectadas.</div>
+      <div style="margin-top:.8rem;font-size:.65rem;font-weight:700;color:var(--a700)">Ver proyecciones →</div>
+    </div>
+    <div class="card card-accent-top card-accent-blue" style="cursor:pointer" onclick="showTab('t-universidades')">
+      <div style="font-size:1.4rem;margin-bottom:.5rem">🎓</div>
+      <div style="font-size:.82rem;font-weight:700;color:var(--s900);margin-bottom:.25rem">Universidades</div>
+      <div style="font-size:.72rem;color:var(--s400);line-height:1.5">3 opciones comparadas · Salamanca recomendada · Análisis de afinidad, idioma y modalidad.</div>
+      <div style="margin-top:.8rem;font-size:.65rem;font-weight:700;color:var(--b600)">Ver universidades →</div>
+    </div>
+  </div>
+
+  <div class="blockquote">
+    <p>"Colombia no puede seguir quedándose atrás en la revolución de la inteligencia artificial. Mi compromiso es construir desde la educación pública las bases de datos, los modelos y los equipos humanos que el país necesita para participar de esta transformación."</p>
+    <cite>— Ronald Yesid Medina Quiroga · Experto en IA citado en La República</cite>
+  </div>
+
+  <div class="slabel">📰 Publicaciones en La República</div>
+  <div class="chip-row">
+    <span class="chip chip-blue" style="cursor:pointer" onclick="showTab('t-publicaciones')">📰 La guerra de los chips de IA (2025)</span>
+    <span class="chip chip-blue" style="cursor:pointer" onclick="showTab('t-publicaciones')">📰 ¿Qué modelo de IA va ganando? (2024)</span>
+  </div>
+</div>
+
+<!-- ══════ PROBLEMA ══════ -->
+<div class="panel" id="t-problema">
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-eyebrow">🔍 El problema</div>
+      <div class="ph-title">Brechas educativas en Colombia:<br><em>datos que justifican la urgencia</em></div>
+      <div class="ph-desc">Indicadores oficiales MEN, DANE, SPADIES 2024. Estos números son el punto de partida de la investigación.</div>
+    </div>
+  </div>
+
+  <div class="cards cards-3" style="margin-bottom:1.2rem">
+    <div class="card card-accent-top card-accent-red">
+      <div class="stat-num" style="color:var(--r500)">8.97<span style="font-size:1.3rem">%</span></div>
+      <div class="stat-lbl">Tasa de deserción en educación superior Colombia 2023. Aprox. 1 de cada 11 estudiantes abandona.</div>
+      <div class="stat-badge badge-red">▼ Mejoró vs 2022 · sigue crítico</div>
+      <div class="stat-src">SPADIES – MEN 2024</div>
+    </div>
+    <div class="card card-accent-top card-accent-amber">
+      <div class="stat-num" style="color:var(--a500)">−11<span style="font-size:1.3rem"> pp</span></div>
+      <div class="stat-lbl">Caída en cobertura escolar Cundinamarca entre 2020–2021. Una de las mayores caídas departamentales del país.</div>
+      <div class="stat-badge badge-amber">▼ Mayor caída regional</div>
+      <div class="stat-src">SIMAT – MEN 2023</div>
+    </div>
+    <div class="card card-accent-top card-accent-blue">
+      <div class="stat-num" style="color:var(--b500)">643K</div>
+      <div class="stat-lbl">Estudiantes reprobaron en Colombia en 2021. El 56% correspondió a hombres en básica secundaria grados 6°–9°.</div>
+      <div class="stat-badge badge-blue">▲ Mayor en secundaria</div>
+      <div class="stat-src">DANE EDUC 2022</div>
+    </div>
+  </div>
+
+  <div class="slabel">📊 Gráficas educativas</div>
+  <div class="two-col">
+    <div class="chart-card">
+      <h4>📉 Deserción escolar Colombia 2018–2023</h4>
+      <p>Tasa anual % · educación básica y media · fuente MEN</p>
+      <div class="cw"><canvas id="cDes"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h4>📊 Aprobación vs. Reprobación vs. Deserción</h4>
+      <p>Colombia 2021–2023 · % matrícula total · fuente DANE</p>
+      <div class="cw"><canvas id="cApr"></canvas></div>
+    </div>
+  </div>
+
+  <div class="slabel">💡 ¿Por qué intervenir con IA?</div>
+  <div class="info-box">
+    🏫 Las brechas educativas en Colombia tienen una dimensión <strong>territorial profunda</strong>: los municipios rurales de Cundinamarca concentran los mayores índices de deserción, reprobación y baja cobertura. El sistema educativo oficial <strong>carece de herramientas predictivas</strong> para anticipar estos riesgos. La IA combinada con análisis geoespacial puede transformar datos dispersos en <strong>decisiones pedagógicas precisas</strong>.
+  </div>
+</div>
+
+<!-- ══════ BRECHA ══════ -->
+<div class="panel" id="t-brecha">
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-eyebrow">📡 Brecha digital</div>
+      <div class="ph-title">Colombia se está<br><em>quedando rezagada</em></div>
+      <div class="ph-desc">Comparativo regional e indicadores nacionales. Fuentes: MinTIC, DANE, UIT 2024.</div>
+    </div>
+  </div>
+
+  <div class="cards cards-4" style="margin-bottom:1.2rem">
+    <div class="card card-accent-top card-accent-red">
+      <div class="stat-num" style="color:var(--r500)">38.4<span style="font-size:1.1rem">%</span></div>
+      <div class="stat-lbl">Índice Brecha Digital Colombia 2024 — habilidades y motivación.</div>
+      <div class="stat-badge badge-red">▲ Crítico</div>
+      <div class="stat-src">MinTIC · IBD 2024</div>
+    </div>
+    <div class="card card-accent-top card-accent-amber">
+      <div class="stat-num" style="color:var(--a500)">28.9<span style="font-size:1.1rem">%</span></div>
+      <div class="stat-lbl">Conectividad en campo colombiano. +70% del territorio rural desconectado.</div>
+      <div class="stat-badge badge-amber">▼ Muy bajo</div>
+      <div class="stat-src">Plan Nacional Desarrollo</div>
+    </div>
+    <div class="card card-accent-top card-accent-blue">
+      <div class="stat-num" style="color:var(--b500)">79<span style="font-size:1.1rem">%</span></div>
+      <div class="stat-lbl">Uso internet Colombia. vs 90% Chile, 90% Uruguay, 88% Argentina.</div>
+      <div class="stat-badge badge-blue">↔ Mejorable</div>
+      <div class="stat-src">MinTIC 2025</div>
+    </div>
+    <div class="card card-accent-top card-accent-green">
+      <div class="stat-num" style="color:var(--g500)">34.7<span style="font-size:1.1rem">%</span></div>
+      <div class="stat-lbl">Brecha explicada por falta de habilidades digitales — más que infraestructura.</div>
+      <div class="stat-badge badge-green">⚠ Raíz educativa</div>
+      <div class="stat-src">La Silla Vacía · 2024</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="chart-card">
+      <h4>🌎 Internet: Colombia vs. Latinoamérica</h4>
+      <p>% población usuaria de internet · comparativo 2024</p>
+      <div class="cw"><canvas id="cComp"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h4>🔵 Composición brecha digital Colombia</h4>
+      <p>Dimensiones Índice IBD · MinTIC 2024 (%)</p>
+      <div class="cw"><canvas id="cDim"></canvas></div>
+    </div>
+  </div>
+
+  <div class="slabel" style="margin-top:1.2rem">📋 Comparativo regional detallado</div>
+  <div style="background:var(--white);border:1px solid var(--s200);border-radius:var(--radius);overflow:hidden">
+    <div style="display:grid;grid-template-columns:1.5fr 1fr 1.5fr 1fr;background:var(--b900);padding:.7rem 1rem">
+      <span style="font-size:.7rem;font-weight:700;color:var(--b200)">País</span>
+      <span style="font-size:.7rem;font-weight:700;color:var(--b200)">Internet %</span>
+      <span style="font-size:.7rem;font-weight:700;color:var(--b200)">Habilidades digitales</span>
+      <span style="font-size:.7rem;font-weight:700;color:var(--b200)">Posición</span>
+    </div>
+    <div id="comp-table"></div>
+  </div>
+</div>
+
+<!-- ══════ PROPUESTA ══════ -->
+<div class="panel" id="t-propuesta">
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-eyebrow">🧠 Propuesta doctoral</div>
+      <div class="ph-title">Qué se va a <em>investigar y construir</em></div>
+    </div>
+  </div>
+
+  <div class="blockquote" style="margin-bottom:1.2rem">
+    <p>"Modelo predictivo basado en IA y análisis geoespacial para reducir brechas educativas y digitales en municipios rurales de Cundinamarca, con canales de monitoreo territorial en tiempo real"</p>
+    <cite>— Título oficial de la investigación doctoral</cite>
+  </div>
+
+  <div class="two-col" style="margin-bottom:1.2rem">
+    <div>
+      <div class="slabel">🎯 Componentes del proyecto</div>
+      <div class="pill-list">
+        <div class="pill">
+          <div class="pill-icon">🗺️</div>
+          <div><div class="pill-title">Modelo geoespacial predictivo</div><div class="pill-desc">Integra datos de cobertura, distancia, infraestructura y conectividad con indicadores de eficiencia escolar para predecir riesgos de fracaso educativo por municipio.</div></div>
+        </div>
+        <div class="pill">
+          <div class="pill-icon">⚡</div>
+          <div><div class="pill-title">Canales de monitoreo en tiempo real</div><div class="pill-desc">Alertas tempranas para desastres naturales (deslizamientos, inundaciones), rendimiento escolar y riesgo territorial en los 116 municipios de Cundinamarca.</div></div>
+        </div>
+        <div class="pill">
+          <div class="pill-icon">🔓</div>
+          <div><div class="pill-title">Dataset abierto de Cundinamarca</div><div class="pill-desc">Primer dataset educativo geoespacial abierto del departamento — disponible para toda Colombia como insumo para modelos de IA nacionales.</div></div>
+        </div>
+        <div class="pill">
+          <div class="pill-icon">🎛️</div>
+          <div><div class="pill-title">Plataforma web para directivos</div><div class="pill-desc">Dashboard funcional con React + D3.js para secretarías de educación. Protocolo replicable para otros departamentos del país.</div></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="slabel">🌱 Misiones Minciencias</div>
+      <div style="display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem">
+        <div style="background:var(--g50);border:1px solid rgba(34,197,94,.25);border-radius:var(--radius);padding:.9rem 1rem">
+          <div style="font-size:.72rem;font-weight:700;color:var(--g700);margin-bottom:.2rem">✅ Misión 1 — Bioeconomía y territorio</div>
+          <div style="font-size:.73rem;color:var(--s600);line-height:1.5">IA territorial para gestión educativa en regiones rurales de Cundinamarca — municipios PDET prioritarios.</div>
+        </div>
+        <div style="background:var(--b50);border:1px solid var(--b200);border-radius:var(--radius);padding:.9rem 1rem">
+          <div style="font-size:.72rem;font-weight:700;color:var(--b700);margin-bottom:.2rem">✅ Misión 2 — Ciencia para la paz</div>
+          <div style="font-size:.73rem;color:var(--s600);line-height:1.5">Reducción de brechas educativas como factor de equidad territorial y cohesión social.</div>
+        </div>
+        <div style="background:var(--s100);border:1px solid var(--s200);border-radius:var(--radius);padding:.9rem 1rem">
+          <div style="font-size:.72rem;font-weight:700;color:var(--s600);margin-bottom:.2rem">📌 ODS 4 + Agenda Digital Colombia 2026</div>
+          <div style="font-size:.73rem;color:var(--s500,#64748b);line-height:1.5">Plan Decenal de Educación + Plan Nacional de Conectividad con métricas medibles.</div>
+        </div>
+      </div>
+      <div class="slabel">🛠️ Stack tecnológico</div>
+      <div style="display:flex;flex-direction:column;gap:.4rem">
+        <div class="tech-item">🗺️ <strong>GIS + Python</strong> — GeoPandas, QGIS, análisis territorial</div>
+        <div class="tech-item">🤖 <strong>Machine Learning</strong> — XGBoost, Random Forest, LSTM</div>
+        <div class="tech-item">📡 <strong>APIs oficiales</strong> — SINEB, SIMAT, IGAC, DANE</div>
+        <div class="tech-item">🎛️ <strong>Dashboard</strong> — React + D3.js + Vercel</div>
+        <div class="tech-item">🔓 <strong>Dataset abierto</strong> — GitHub · Zenodo · CKAN</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ METODOLOGÍA ══════ -->
+<div class="panel" id="t-metodologia">
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-eyebrow">📋 Metodología</div>
+      <div class="ph-title">Plan doctoral <em>paso a paso</em></div>
+      <div class="ph-desc">3 años · 6 semestres · Modalidad híbrida · Investigación desde Colombia · Defensa presencial en universidad extranjera.</div>
+    </div>
+  </div>
+
+  <div class="slabel">🗂️ 5 fases de investigación</div>
+  <div class="step-flow" style="margin-bottom:1.5rem">
+    <div class="sf-item">
+      <div class="sf-num">01</div>
+      <div class="sf-title">📚 Revisión sistemática</div>
+      <div class="sf-desc">Estado del arte en IA educativa, GIS y sistemas predictivos territoriales.</div>
+      <div class="sf-dur">Sem. 1–2 · 12 meses</div>
+    </div>
+    <div class="sf-item">
+      <div class="sf-num">02</div>
+      <div class="sf-title">📥 Recolección de datos</div>
+      <div class="sf-desc">Integración SIMAT, SINEB, IGAC, DANE. Dataset abierto Cundinamarca.</div>
+      <div class="sf-dur">Sem. 2–3 · 8 meses</div>
+    </div>
+    <div class="sf-item">
+      <div class="sf-num">03</div>
+      <div class="sf-title">🤖 Construcción modelo</div>
+      <div class="sf-desc">Entrenamiento ML (XGBoost, LSTM) y arquitectura de alertas tempranas.</div>
+      <div class="sf-dur">Sem. 3–4 · 10 meses</div>
+    </div>
+    <div class="sf-item">
+      <div class="sf-num">04</div>
+      <div class="sf-title">🏫 Piloto institucional</div>
+      <div class="sf-desc">5 IE de Fusagasugá y Silvania. Medición de impacto pedagógico real.</div>
+      <div class="sf-dur">Sem. 4–5 · 8 meses</div>
+    </div>
+    <div class="sf-item">
+      <div class="sf-num">05</div>
+      <div class="sf-title">📝 Tesis y defensa</div>
+      <div class="sf-desc">3 artículos Q1. Plataforma pública. Defensa presencial en el extranjero.</div>
+      <div class="sf-dur">Sem. 5–6 · 10 meses</div>
+    </div>
+  </div>
+
+  <div class="slabel">⏰ Cronograma urgente — aplicación Minciencias</div>
+  <div class="warn-box">⏰ <strong>Atención:</strong> La convocatoria cierra el 20 de abril de 2026. Hay que actuar esta semana.</div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot" style="background:var(--r600,#dc2626)">1</div><div class="tl-line"></div></div>
+      <div class="tl-right"><div class="tl-title">✉️ Contactar Universidad de Salamanca</div><div class="tl-desc">Solicitar proceso de admisión 2026-2. Adjuntar CV y carta de intención con propuesta de investigación.</div><div class="tl-meta">📅 Esta semana · Antes del 22 de marzo · 🔴 URGENTE</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot" style="background:var(--r600,#dc2626)">2</div><div class="tl-line"></div></div>
+      <div class="tl-right"><div class="tl-title">📄 Redactar propuesta formal</div><div class="tl-desc">Alineada con las PIIOM de Minciencias. Título, pregunta de investigación, metodología, cronograma y productos esperados.</div><div class="tl-meta">📅 23–29 de marzo · 🔴 URGENTE</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot" style="background:var(--a500)">3</div><div class="tl-line"></div></div>
+      <div class="tl-right"><div class="tl-title">📋 Registrarse en plataforma Minciencias</div><div class="tl-desc">Crear cuenta y diligenciar hoja de vida del candidato. Preparar todos los documentos requeridos.</div><div class="tl-meta">📅 Semana del 23 de marzo · 🟡 CRÍTICO</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot" style="background:var(--a500)">4</div><div class="tl-line"></div></div>
+      <div class="tl-right"><div class="tl-title">📩 Obtener carta de admisión</div><div class="tl-desc">Requisito indispensable para la convocatoria. Carta oficial del programa doctoral seleccionado.</div><div class="tl-meta">📅 Antes del 5 de abril · 🟡 CRÍTICO</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot" style="background:var(--g500)">5</div><div class="tl-line"></div></div>
+      <div class="tl-right"><div class="tl-title">🚀 Envío final a Minciencias</div><div class="tl-desc">Subir todos los documentos y confirmar envío oficial. No esperar hasta el último momento.</div><div class="tl-meta">📅 Antes del 20 de abril · 4:00 p.m. · ⛳ DEADLINE</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ PROYECCIONES ══════ -->
+<div class="panel" id="t-proyecciones">
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-eyebrow">📈 Proyecciones</div>
+      <div class="ph-title">Impacto <em>proyectado</em> 2024–2030</div>
+      <div class="ph-desc">Basado en modelos similares: SEP México (2022), INEP Brasil (2021), MINEDUC Chile (2023).</div>
+    </div>
+  </div>
+
+  <div class="cards cards-4" style="margin-bottom:1.2rem">
+    <div class="card" style="text-align:center;border-top:3px solid var(--r500)">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--s400);margin-bottom:.3rem">Línea base · 2024</div>
+      <div class="stat-num" style="color:var(--r500);text-align:center">3.8<span style="font-size:1.1rem">%</span></div>
+      <div style="font-size:.72rem;color:var(--s400)">Deserción Cundinamarca · Punto de partida</div>
+    </div>
+    <div class="card" style="text-align:center;border-top:3px solid var(--a500)">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--s400);margin-bottom:.3rem">Año 1 · 2025</div>
+      <div class="stat-num" style="color:var(--a500);text-align:center">3.1<span style="font-size:1.1rem">%</span></div>
+      <div style="font-size:.72rem;color:var(--g700);font-weight:600">↓ −18% deserción</div>
+    </div>
+    <div class="card" style="text-align:center;border-top:3px solid var(--b500)">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--s400);margin-bottom:.3rem">Año 2 · 2026</div>
+      <div class="stat-num" style="color:var(--b500);text-align:center">2.4<span style="font-size:1.1rem">%</span></div>
+      <div style="font-size:.72rem;color:var(--g700);font-weight:600">↓ −37% acumulado</div>
+    </div>
+    <div class="card" style="text-align:center;border-top:3px solid var(--g500)">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--s400);margin-bottom:.3rem">Meta · 2030</div>
+      <div class="stat-num" style="color:var(--g500);text-align:center">1.8<span style="font-size:1.1rem">%</span></div>
+      <div style="font-size:.72rem;color:var(--g700);font-weight:600">↓ −53% acumulado</div>
+    </div>
+  </div>
+
+  <div class="two-col" style="margin-bottom:1.2rem">
+    <div class="chart-card">
+      <h4>📉 Proyección deserción 2024–2030</h4>
+      <p>Con modelo IA vs. sin intervención · Cundinamarca</p>
+      <div class="cw"><canvas id="cProy"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h4>🏘️ Municipios con modelo activo</h4>
+      <p>Expansión progresiva · Cundinamarca (116 total)</p>
+      <div class="cw"><canvas id="cMuni"></canvas></div>
+    </div>
+  </div>
+
+  <div class="slabel">🌟 Impacto esperado en cifras</div>
+  <div class="cards cards-3">
+    <div class="impact-card" style="border-top:3px solid var(--b500)"><div class="impact-num" style="color:var(--b500)">12,400</div><div class="impact-lbl">👨‍🎓 Estudiantes en riesgo identificados y atendidos durante el piloto de 2 años en Cundinamarca.</div></div>
+    <div class="impact-card" style="border-top:3px solid var(--g500)"><div class="impact-num" style="color:var(--g500)">116</div><div class="impact-lbl">🏫 Municipios de Cundinamarca con acceso al modelo predictivo al cierre del doctorado.</div></div>
+    <div class="impact-card" style="border-top:3px solid var(--r500)"><div class="impact-num" style="color:var(--r500)">−53%</div><div class="impact-lbl">📉 Reducción proyectada en deserción escolar rural en Cundinamarca a 2030 con implementación plena.</div></div>
+    <div class="impact-card" style="border-top:3px solid var(--a500)"><div class="impact-num" style="color:var(--a500)">1°</div><div class="impact-lbl">🗄️ Dataset educativo geoespacial abierto de Cundinamarca — insumo real para IA nacional.</div></div>
+    <div class="impact-card" style="border-top:3px solid var(--b500)"><div class="impact-num" style="color:var(--b500)">3+</div><div class="impact-lbl">🌊 Sistemas predictivos: desastres, cultivos y alertas tempranas territoriales en Colombia.</div></div>
+    <div class="impact-card" style="border-top:3px solid var(--g500)"><div class="impact-num" style="color:var(--g500)">3</div><div class="impact-lbl">📚 Artículos científicos Q1/Q2 con metodología replicable para Latinoamérica.</div></div>
+  </div>
+</div>
+
+<!-- ══════ UNIVERSIDADES ══════ -->
+<div class="panel" id="t-universidades">
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-eyebrow">🎓 Universidades</div>
+      <div class="ph-title">¿Dónde hacer <em>el doctorado</em>?</div>
+      <div class="ph-desc">3 opciones comparadas por afinidad con el perfil de Ronald. Modalidad híbrida — investigación desde Colombia, defensa presencial en el extranjero.</div>
+    </div>
+  </div>
+
+  <div class="cards cards-3">
+    <div class="card recommended card-accent-top card-accent-blue" id="uni-cards">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem">
+        <div class="uni-flag">🇪🇸</div>
+        <div style="background:var(--b600);color:white;font-size:.58rem;font-weight:800;padding:.2rem .6rem;border-radius:100px">#1 Recomendada</div>
+      </div>
+      <div class="uni-name">U. de Salamanca</div>
+      <div class="uni-prog">Doctorado en IA Aplicada · España</div>
+      <div class="sb"><div class="sbr"><span>Afinidad perfil Ronald</span><span style="font-weight:700;color:var(--b600)">96%</span></div><div class="sbt"><div class="sbf" style="width:96%"></div></div></div>
+      <div class="sb"><div class="sbr"><span>Facilidad idioma (español)</span><span style="font-weight:700;color:var(--g700)">100%</span></div><div class="sbt"><div class="sbf sbf-g" style="width:100%"></div></div></div>
+      <div class="sb"><div class="sbr"><span>Modalidad híbrida</span><span style="font-weight:700;color:var(--b600)">90%</span></div><div class="sbt"><div class="sbf" style="width:90%"></div></div></div>
+      <div class="sb"><div class="sbr"><span>Reconocimiento Minciencias</span><span style="font-weight:700;color:var(--g700)">100%</span></div><div class="sbt"><div class="sbf sbf-g" style="width:100%"></div></div></div>
+      <div class="utag-row"><span class="utag">✅ Minciencias</span><span class="utag">Español</span><span class="utag">Convenio Colombia 2025</span><span class="utag">Defensa presencial USAL</span></div>
+    </div>
+    <div class="card card-accent-top card-accent-blue">
+      <div class="uni-flag">🇺🇸</div>
+      <div class="uni-name">George Washington U.</div>
+      <div class="uni-prog">D.Eng. AI & Machine Learning · EE.UU.</div>
+      <div class="sb"><div class="sbr"><span>Afinidad perfil</span><span style="font-weight:700;color:var(--b600)">82%</span></div><div class="sbt"><div class="sbf" style="width:82%"></div></div></div>
+      <div class="sb"><div class="sbr"><span>Idioma (inglés C1)</span><span style="font-weight:700;color:var(--a700)">50%</span></div><div class="sbt"><div class="sbf sbf-a" style="width:50%"></div></div></div>
+      <div class="sb"><div class="sbr"><span>Modalidad 100% online</span><span style="font-weight:700;color:var(--g700)">100%</span></div><div class="sbt"><div class="sbf sbf-g" style="width:100%"></div></div></div>
+      <div class="sb"><div class="sbr"><span>Top 500 Shanghai</span><span style="font-weight:700;color:var(--b600)">100%</span></div><div class="sbt"><div class="sbf" style="width:100%"></div></div></div>
+      <div class="utag-row"><span class="utag">✅ Top 500 Shanghái</span><span class="utag">Inglés C1</span><span class="utag">100% Online</span></div>
+    </div>
+    <div class="card card-accent-top card-accent-amber">
+      <div class="uni-flag">🇵🇹</div>
+      <div class="uni-name">Universidade do Porto</div>
+      <div class="uni-prog">Doctorado en IA / Computación · Portugal</div>
+      <div class="sb"><div class="sbr"><span>Afinidad perfil</span><span style="font-weight:700;color:var(--a700)">78%</span></div><div class="sbt"><div class="sbf sbf-a" style="width:78%"></div></div></div>
+      <div class="sb"><div class="sbr"><span>Idioma (portugués)</span><span style="font-weight:700;color:var(--g700)">85%</span></div><div class="sbt"><div class="sbf sbf-g" style="width:85%"></div></div></div>
+      <div class="sb"><div class="sbr"><span>Costo accesible (€2K/año)</span><span style="font-weight:700;color:var(--g700)">92%</span></div><div class="sbt"><div class="sbf sbf-g" style="width:92%"></div></div></div>
+      <div class="sb"><div class="sbr"><span>Espacio Europeo Educación</span><span style="font-weight:700;color:var(--a700)">95%</span></div><div class="sbt"><div class="sbf sbf-a" style="width:95%"></div></div></div>
+      <div class="utag-row"><span class="utag">✅ Espacio Europeo</span><span class="utag">Portugués</span><span class="utag">€2.000/año</span></div>
+    </div>
+  </div>
+
+  <div class="slabel" style="margin-top:1.2rem">💰 Cobertura de la beca · Convocatoria 975</div>
+  <div class="info-box">
+    🎓 <strong>Presupuesto total: $368.000 millones COP</strong> · Para doctorado exterior (Top 500): cubre matrícula 100%, $36M COP/semestre sostenimiento, $40M proyecto de investigación, seguro médico y tiquetes. <strong>Requisito clave:</strong> carta de admisión al programa doctoral antes del 20 de abril de 2026.
+  </div>
+</div>
+
+<!-- ══════ PUBLICACIONES ══════ -->
+<div class="panel" id="t-publicaciones">
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-eyebrow">📰 Publicaciones</div>
+      <div class="ph-title">Citado en <em>La República</em></div>
+      <div class="ph-desc">Ronald Yesid Medina Quiroga, experto en inteligencia artificial, ha sido citado por el diario económico más antiguo de Colombia.</div>
+    </div>
+  </div>
+
+  <div class="cards cards-2">
+    <a class="pub-card" href="https://www.larepublica.co/internet-economy/los-jugadores-en-la-guerra-de-los-chips-de-ia-nvidia-broadcom-y-tsmc-las-mas-valiosas-4183956" target="_blank">
+      <div class="pub-source-row">
+        <div class="pub-badge">La República</div>
+        <div class="pub-date">2025 · Economía Digital · IA & Chips</div>
+      </div>
+      <div class="pub-title">🔵 Los jugadores en la guerra de los chips de IA: Nvidia, Broadcom y TSMC las más valiosas</div>
+      <div class="pub-excerpt">"En Colombia y América Latina tenemos que pasar de ser consumidores de tecnología a ser creadores y gobernantes de ella, y eso comienza en la educación."</div>
+      <div class="pub-link">Leer artículo completo en La República →</div>
+    </a>
+    <a class="pub-card" href="https://www.larepublica.co/internet-economy/cual-es-el-mejor-modelo-de-inteligencia-artificial-4075578" target="_blank">
+      <div class="pub-source-row">
+        <div class="pub-badge">La República</div>
+        <div class="pub-date">2024 · Tecnología · Modelos de IA</div>
+      </div>
+      <div class="pub-title">🟣 En la carrera por la IA ¿Qué modelo va ganando?</div>
+      <div class="pub-excerpt">Explicó las pautas para escoger el modelo correcto: responder primero ¿Qué problema quiero resolver? ¿Qué datos manejaré? ¿Cuál es mi objetivo: automatización, análisis o generación de contenido?</div>
+      <div class="pub-link">Leer artículo completo en La República →</div>
+    </a>
+  </div>
+
+  <div class="blockquote" style="margin-top:1.2rem">
+    <p>"El ascenso de Nvidia hasta convertirse en la primera empresa pública en alcanzar una valoración de US$4 billones no es solo un hito financiero; es la manifestación más clara de su centralidad en la guerra de los chips — y Colombia debe aprender a gobernar esta tecnología, no solo consumirla."</p>
+    <cite>— Ronald Yesid Medina Quiroga · La República, 2025</cite>
+  </div>
+</div>
+
+<!-- ══════ PERFIL ══════ -->
+<div class="panel" id="t-perfil">
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-eyebrow">👤 Perfil</div>
+      <div class="ph-title">Ronald Yesid <em>Medina Quiroga</em></div>
+      <div class="ph-desc">Magíster en Gerencia de Proyectos · Ingeniero de Sistemas · Docente ITI Fusagasugá · Experto en IA citado en La República.</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="slabel">🎓 Formación académica</div>
+      <div style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.2rem">
+        <div class="tech-item" style="justify-content:flex-start">🎓 <div><strong>Mg. Gerencia de Proyectos</strong> · Politécnico GranColombiano</div></div>
+        <div class="tech-item" style="justify-content:flex-start">📜 <div><strong>Esp. Gerencia de Proyectos</strong> · Politécnico GranColombiano · 2022</div></div>
+        <div class="tech-item" style="justify-content:flex-start">💻 <div><strong>Ingeniero de Sistemas</strong> · Politécnico GranColombiano · 2021</div></div>
+        <div class="tech-item" style="justify-content:flex-start">🖥️ <div><strong>Tecnología Admón. Sistemas</strong> · Politécnico GranColombiano · 2021</div></div>
+      </div>
+      <div class="slabel">💼 Experiencia laboral</div>
+      <div style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.2rem">
+        <div class="tech-item">🏢 <div><strong>Gerente</strong> · M&L Asesorías Profesionales (2018–actual)</div></div>
+        <div class="tech-item">🖨️ <div><strong>Supervisor Senior</strong> · HP Colombia (2017–2018)</div></div>
+        <div class="tech-item">🥛 <div><strong>Jefe de Ventas Nacional</strong> · Alpina (2015–2016)</div></div>
+      </div>
+      <div class="slabel">🏫 Vinculación institucional</div>
+      <div style="display:flex;flex-direction:column;gap:.4rem">
+        <div class="tech-item">🏫 <div><strong>Docente</strong> · ITI Fusagasugá, Cundinamarca</div></div>
+        <div class="tech-item">📚 <div><strong>Estudiante ECACEN</strong> · UNAD</div></div>
+        <div class="tech-item">📰 <div><strong>Experto en IA</strong> · Citado en La República (2024, 2025)</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="slabel">⚡ Competencias clave</div>
+      <div class="prog-item"><div class="prog-row"><span>Gerencia de proyectos</span><span class="prog-pct">95%</span></div><div class="prog-bar"><div class="prog-fill" style="width:95%;background:var(--b500)"></div></div></div>
+      <div class="prog-item"><div class="prog-row"><span>Ingeniería de sistemas</span><span class="prog-pct">90%</span></div><div class="prog-bar"><div class="prog-fill" style="width:90%;background:var(--g500)"></div></div></div>
+      <div class="prog-item"><div class="prog-row"><span>Análisis de datos y estadística</span><span class="prog-pct">80%</span></div><div class="prog-bar"><div class="prog-fill" style="width:80%;background:var(--b500)"></div></div></div>
+      <div class="prog-item"><div class="prog-row"><span>Liderazgo de equipos</span><span class="prog-pct">95%</span></div><div class="prog-bar"><div class="prog-fill" style="width:95%;background:var(--a500)"></div></div></div>
+      <div class="prog-item"><div class="prog-row"><span>Pensamiento matemático y lógico</span><span class="prog-pct">85%</span></div><div class="prog-bar"><div class="prog-fill" style="width:85%;background:var(--g500)"></div></div></div>
+      <div class="prog-item"><div class="prog-row"><span>Análisis geoespacial y territorial</span><span class="prog-pct">78%</span></div><div class="prog-bar"><div class="prog-fill" style="width:78%;background:var(--b500)"></div></div></div>
+
+      <div class="blockquote" style="margin-top:1.2rem">
+        <p>"Colombia tiene el talento, el territorio y la necesidad. Solo le falta la infraestructura de datos y los equipos para liderar su propia revolución de inteligencia artificial."</p>
+        <cite>— Ronald Yesid Medina Quiroga · La República, 2025</cite>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ CONTACTO ══════ -->
+<div class="panel" id="t-contacto">
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-eyebrow">📬 Contacto</div>
+      <div class="ph-title">Conectemos <em>ahora</em></div>
+      <div class="ph-desc">Quedan aproximadamente 33 días para el cierre de la Convocatoria 975 de Minciencias.</div>
+    </div>
+  </div>
+
+  <div class="urgency">
+    <div class="urg-header">
+      <div class="urg-icon">⏰</div>
+      <div><div class="urg-title">Cierre: 20 de abril de 2026 · 4:00 p.m.</div><div class="urg-sub">Actuar esta semana para tener tiempo suficiente</div></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="slabel">📲 Información de contacto</div>
+      <div class="contact-list">
+        <a class="ci" href="mailto:ronald.medina.corp@gmail.com">
+          <div class="ci-icon">📧</div>
+          <div class="ci-text"><span>Correo electrónico</span>ronald.medina.corp@gmail.com</div>
+        </a>
+        <a class="ci" href="tel:+573023970173">
+          <div class="ci-icon">📱</div>
+          <div class="ci-text"><span>Celular / WhatsApp</span>+57 302 397 0173</div>
+        </a>
+        <div class="ci">
+          <div class="ci-icon">📍</div>
+          <div class="ci-text"><span>Ubicación</span>Calle 6 #5-95 La Mesa · Fusagasugá, Cundinamarca</div>
+        </div>
+        <div class="ci">
+          <div class="ci-icon">🏫</div>
+          <div class="ci-text"><span>Institución</span>ITI Fusagasugá · UNAD ECACEN · Colombia</div>
+        </div>
+        <a class="ci" href="https://www.larepublica.co/internet-economy/los-jugadores-en-la-guerra-de-los-chips-de-ia-nvidia-broadcom-y-tsmc-las-mas-valiosas-4183956" target="_blank">
+          <div class="ci-icon">📰</div>
+          <div class="ci-text"><span>La República · Publicación 1 (2025)</span>La guerra de los chips de IA</div>
+        </a>
+        <a class="ci" href="https://www.larepublica.co/internet-economy/cual-es-el-mejor-modelo-de-inteligencia-artificial-4075578" target="_blank">
+          <div class="ci-icon">📰</div>
+          <div class="ci-text"><span>La República · Publicación 2 (2024)</span>¿Qué modelo de IA va ganando?</div>
+        </a>
+      </div>
+    </div>
+    <div>
+      <div class="slabel">🗂️ Próximos pasos urgentes</div>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-left"><div class="tl-dot" style="background:var(--r500);font-size:.55rem">HOY</div><div class="tl-line"></div></div><div class="tl-right"><div class="tl-title">✉️ Escribir a Salamanca</div><div class="tl-meta" style="color:var(--r500)">📅 Antes del 22 de marzo</div></div></div>
+        <div class="tl-item"><div class="tl-left"><div class="tl-dot" style="background:var(--r500)">2</div><div class="tl-line"></div></div><div class="tl-right"><div class="tl-title">📄 Redactar propuesta PIIOM</div><div class="tl-meta" style="color:var(--r500)">📅 23–29 de marzo</div></div></div>
+        <div class="tl-item"><div class="tl-left"><div class="tl-dot" style="background:var(--a500)">3</div><div class="tl-line"></div></div><div class="tl-right"><div class="tl-title">📋 Registrarse en Minciencias</div><div class="tl-meta" style="color:var(--a500)">📅 Semana del 23 marzo</div></div></div>
+        <div class="tl-item"><div class="tl-left"><div class="tl-dot" style="background:var(--a500)">4</div><div class="tl-line"></div></div><div class="tl-right"><div class="tl-title">📩 Obtener carta de admisión</div><div class="tl-meta" style="color:var(--a500)">📅 Antes del 5 de abril</div></div></div>
+        <div class="tl-item"><div class="tl-left"><div class="tl-dot" style="background:var(--g500)">🚀</div><div class="tl-line"></div></div><div class="tl-right"><div class="tl-title">🚀 Envío final Minciencias</div><div class="tl-meta" style="color:var(--g700)">📅 20 de abril · 4:00 p.m. DEADLINE</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--s200);font-size:.65rem;color:var(--s400);text-align:center">
+    <strong style="color:var(--s600)">Ronald Yesid Medina Quiroga</strong> · Mg. Gerencia de Proyectos · Ing. de Sistemas · ITI Fusagasugá · UNAD ECACEN · Fusagasugá, Cundinamarca, Colombia<br>
+    <span>Propuesta Doctoral · Convocatoria 975 · Minciencias 2026 · Datos: MEN · DANE · SPADIES · SIMAT · MinTIC · La República</span>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+/* ─── TABS ──────────────────────────────────────────── */
+function showTab(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const tabs = document.querySelectorAll('.tab');
+  const map = {'t-home':0,'t-problema':1,'t-brecha':2,'t-propuesta':3,'t-metodologia':4,'t-proyecciones':5,'t-universidades':6,'t-publicaciones':7,'t-perfil':8,'t-contacto':9};
+  if (map[id] !== undefined) tabs[map[id]].classList.add('active');
+  // init charts on first show
+  initCharts(id);
+  // animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.sbf,.prog-fill').forEach(b => {
+      const w = b.style.width; b.style.width = '0';
+      setTimeout(() => b.style.width = w, 50);
+    });
+  }, 50);
+  window.scrollTo({top: document.getElementById('hero-banner').offsetTop, behavior:'smooth'});
+}
+
+/* ─── COMPARISON TABLE ──────────────────────────────── */
+const compData = [
+  ['🇺🇾 Uruguay','90%','Alta','🥇 1°',false],
+  ['🇨🇱 Chile','90%','Alta','🥈 2°',false],
+  ['🇦🇷 Argentina','88%','Media-Alta','🥉 3°',false],
+  ['🇧🇷 Brasil','81%','Media','4°',false],
+  ['🇲🇽 México','76%','Media','5°',false],
+  ['🇨🇴 Colombia','79%','Baja-Media ⚠','7°',true],
+  ['🇵🇪 Perú','75%','Baja','8°',false],
+  ['🇧🇴 Bolivia','66%','Baja','10°',false],
+];
+function buildTable(){
+  const t = document.getElementById('comp-table'); if(!t) return;
+  t.innerHTML = compData.map((r,i)=>`
+    <div style="display:grid;grid-template-columns:1.5fr 1fr 1.5fr 1fr;padding:.5rem 1rem;background:${r[4]?'var(--r50)':(i%2?'white':'var(--s50)')};border-bottom:1px solid var(--s100)">
+      ${r.slice(0,4).map((v,j)=>`<span style="font-size:.75rem;color:${r[4]?'var(--r700)':'var(--s700)'};font-weight:${r[4]||j===0?'700':'400'}">${v}</span>`).join('')}
+    </div>`).join('');
+}
+
+/* ─── CHARTS ─────────────────────────────────────────── */
+const charts = {};
+const b = '#3B82F6', r = '#EF4444', g = '#22C55E', a = '#F59E0B', m = '#94A3B8';
+function base(){ return{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{backgroundColor:'#1E3A5F',titleFont:{family:'Plus Jakarta Sans',weight:'700'},bodyFont:{family:'Plus Jakarta Sans'},padding:10,cornerRadius:8}}, scales:{ x:{grid:{color:'rgba(0,0,0,.04)',drawBorder:false},ticks:{font:{family:'Plus Jakarta Sans',size:10},color:m}}, y:{grid:{color:'rgba(0,0,0,.04)',drawBorder:false},ticks:{font:{family:'Plus Jakarta Sans',size:10},color:m}}}}; }
+function withLeg(o){ return{...o,plugins:{...o.plugins,legend:{display:true,labels:{color:m,font:{family:'Plus Jakarta Sans',size:10},boxWidth:12,padding:10}}}}; }
+function pct(o,min=null){ const y={...o.scales.y,ticks:{...o.scales.y.ticks,callback:v=>v+'%'}}; if(min!==null) y.min=min; return{...o,scales:{...o.scales,y}}; }
+
+function initCharts(tab){
+  if(tab==='t-problema' && !charts.des){
+    charts.des = new Chart(document.getElementById('cDes'),{ type:'line', data:{ labels:['2018','2019','2020','2021','2022','2023'], datasets:[{data:[8.2,7.9,9.8,10.1,9.03,8.97],borderColor:b,backgroundColor:'rgba(59,130,246,.08)',fill:true,tension:.4,pointBackgroundColor:b,pointRadius:4,borderWidth:2}]}, options:pct(base(),6)});
+    charts.apr = new Chart(document.getElementById('cApr'),{ type:'bar', data:{ labels:['2021','2022','2023'], datasets:[{label:'✅ Aprobación',data:[88.1,89.2,89.8],backgroundColor:'rgba(34,197,94,.65)',borderRadius:5},{label:'❌ Reprobación',data:[7.2,6.8,6.3],backgroundColor:r,borderRadius:5},{label:'📉 Deserción',data:[4.7,3.98,3.9],backgroundColor:a,borderRadius:5}]}, options:pct(withLeg(base()))});
+  }
+  if(tab==='t-brecha' && !charts.comp){
+    charts.comp = new Chart(document.getElementById('cComp'),{ type:'bar', data:{ labels:['🇺🇾','🇨🇱','🇦🇷','🇧🇷','🇲🇽','🇵🇪','🇨🇴','🇧🇴'], datasets:[{data:[90,90,88,81,76,75,79,66],borderRadius:5, backgroundColor:['rgba(34,197,94,.55)','rgba(34,197,94,.55)','rgba(34,197,94,.55)','rgba(59,130,246,.45)','rgba(59,130,246,.45)','rgba(59,130,246,.35)','#EF4444','rgba(59,130,246,.3)']}]}, options:pct(base(),50)});
+    charts.dim = new Chart(document.getElementById('cDim'),{ type:'doughnut', data:{ labels:['🧠 Habilidades','📶 Acceso','⚡ Aprovechamiento','💡 Motivación'], datasets:[{data:[34.7,31,18.3,16],backgroundColor:[a,r,b,g],borderWidth:0,hoverOffset:8}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{color:m,font:{family:'Plus Jakarta Sans',size:10},boxWidth:12,padding:8}},tooltip:{backgroundColor:'#1E3A5F',bodyFont:{family:'Plus Jakarta Sans'},padding:10,cornerRadius:8}}}});
+    buildTable();
+  }
+  if(tab==='t-proyecciones' && !charts.proy){
+    charts.proy = new Chart(document.getElementById('cProy'),{ type:'line', data:{ labels:['2024','2025','2026','2027','2028','2029','2030'], datasets:[{label:'Sin IA',data:[3.8,3.75,3.7,3.68,3.65,3.62,3.60],borderColor:r,borderDash:[5,5],tension:.4,pointRadius:3,borderWidth:1.5,pointBackgroundColor:r},{label:'Con modelo IA ✅',data:[3.8,3.4,3.1,2.7,2.4,2.1,1.8],borderColor:g,tension:.4,pointRadius:3,borderWidth:2,pointBackgroundColor:g,backgroundColor:'rgba(34,197,94,.07)',fill:true}]}, options:pct(withLeg(base()),1)});
+    charts.muni = new Chart(document.getElementById('cMuni'),{ type:'bar', data:{ labels:['2026','2027','2028','2029','2030'], datasets:[{data:[5,15,30,58,90],borderRadius:6, backgroundColor:['rgba(59,130,246,.3)','rgba(59,130,246,.45)','rgba(59,130,246,.6)','rgba(59,130,246,.78)','#3B82F6']}]}, options:base()});
+  }
+}
+
+// init first tab
+initCharts('t-home');
+
+// animate prog bars on load
+setTimeout(()=>{
+  document.querySelectorAll('.prog-fill').forEach(b=>{const w=b.style.width;b.style.width='0';setTimeout(()=>b.style.width=w,200)});
+},300);
+</script>
+</body>
+</html>
