@@ -1265,27 +1265,6 @@ window.addEventListener('load', function() {
 <!-- ═══ JAVASCRIPT CHATBOT ═══ -->
 <script>
 var chatOpen = false;
-var chatHistory = [];
-var userName = '';
-
-var KB = [
-  { t:['hola','buenos','hey','hi','buenas','saludos','buen día','buen dia'], r: function(){ return '👋 ¡Hola! Soy el asistente de <strong>Ronald Medina</strong>, experto en IA.<br><br>¿Con quién tengo el gusto? 😊'; }},
-  { t:['me llamo','soy ','mi nombre','llamo'], r: function(i){ userName=i.replace(/.*?(me llamo|soy|mi nombre es|llamo)\s*/i,'').split(' ')[0]; return '¡Mucho gusto, <strong>'+userName+'</strong>! 🤝<br><br>¿En qué te puedo ayudar hoy?<br>Puedes preguntar sobre: <strong>servicios</strong>, <strong>investigación</strong>, <strong>contacto</strong> o <strong>publicaciones</strong>.'; }},
-  { t:['quién es ronald','quien es ronald','sobre ronald','perfil','experiencia de ronald','ronald medina'], r: function(){ return '👨‍💻 <strong>Ronald Yesid Medina Quiroga</strong> es:<br><br>🎓 Mg. Gerencia de Proyectos<br>💻 Ingeniero de Sistemas<br>🤖 +10 años en IA y transformación digital<br>📰 Experto citado en <em>La República</em><br>🌍 Especialista en educación y tecnología en Colombia<br><br>¿Quieres saber sobre sus servicios o investigación?'; }},
-  { t:['servicio','servicios','contratar','ayuda con','necesito','qué ofrece','que ofrece','qué hace','que hace'], r: function(){ return '💼 Ronald ofrece:<br><br>🤖 <strong>Consultoría en IA</strong> – Diseño e implementación de soluciones<br>📊 <strong>Análisis de Datos</strong> – Dashboards y modelos predictivos<br>🎓 <strong>Formación en IA</strong> – Talleres para instituciones<br>🏙️ <strong>Ciudades Inteligentes</strong> – Infraestructura de datos territoriales<br><br>¿Te interesa alguno en particular?'; }},
-  { t:['consultoría','consultoria','implementar ia','proyecto de ia','solución de ia','solucion de ia'], r: function(){ return '🤖 El servicio de <strong>Consultoría en IA</strong> incluye:<br><br>✅ Diagnóstico de necesidades tecnológicas<br>✅ Diseño de arquitectura de datos con IA<br>✅ Implementación de modelos predictivos<br>✅ Capacitación del equipo<br>✅ Seguimiento y mejora continua<br><br>Para una propuesta personalizada:<br>📧 <a href="mailto:ronald.medina.corp@gmail.com?subject=Consultoría IA" style="color:#1565C0">ronald.medina.corp@gmail.com</a>'; }},
-  { t:['análisis de datos','analisis de datos','dashboard','kpi','indicadores','datos'], r: function(){ return '📊 El servicio de <strong>Análisis de Datos</strong> incluye:<br><br>✅ Diseño de dashboards interactivos<br>✅ Definición y seguimiento de KPIs<br>✅ Modelos predictivos con ML<br>✅ Visualización de datos territoriales<br>✅ Reportes ejecutivos automatizados<br><br>¿Quieres una cotización? Escribe a Ronald:<br>📧 <a href="mailto:ronald.medina.corp@gmail.com?subject=Análisis de Datos" style="color:#1565C0">ronald.medina.corp@gmail.com</a>'; }},
-  { t:['formación','formacion','capacitación','capacitacion','taller','curso','semillero','aprender ia'], r: function(){ return '🎓 El servicio de <strong>Formación en IA</strong> incluye:<br><br>✅ Talleres presenciales y virtuales<br>✅ Semilleros de investigación en IA<br>✅ Formación para docentes e instituciones<br>✅ Contenidos adaptados al nivel del grupo<br>✅ Certificación al finalizar<br><br>Ideal para colegios, universidades y empresas.<br>📱 <a href="https://wa.me/573227178417?text=Hola Ronald, me interesa la formación en IA" target="_blank" style="color:#25D366">Consultar por WhatsApp</a>'; }},
-  { t:['investigación','investigacion','doctorado','doctoral','tesis','phd','deserción','desercion','municipios','cundinamarca'], r: function(){ return '🔬 La investigación doctoral de Ronald:<br><br>📌 <strong>Título:</strong> Arquitectura Nacional de Datos Territoriales con IA para Colombia<br><br>📊 <strong>Indicadores clave:</strong><br>• Brecha digital urbano-rural: <strong>38.4%</strong><br>• Reducción proyectada de deserción: <strong>−53%</strong><br>• Cobertura: <strong>116 municipios</strong> de Cundinamarca<br>• Conectividad rural: solo <strong>37%</strong> vs <strong>79%</strong> urbano<br>• Deserción educación superior 2023: <strong>8.97%</strong><br><br>¿Quieres más detalles sobre la metodología?'; }},
-  { t:['metodología','metodologia','cómo funciona','como funciona','método','metodo','fases','etapas'], r: function(){ return '⚙️ La metodología tiene <strong>4 fases</strong>:<br><br>1️⃣ <strong>Diagnóstico territorial</strong> – Mapeo de brechas digitales en 116 municipios<br>2️⃣ <strong>Diseño del modelo</strong> – Arquitectura de datos con sistemas multiagente<br>3️⃣ <strong>Implementación piloto</strong> – Prueba en instituciones seleccionadas<br>4️⃣ <strong>Escalabilidad</strong> – Expansión a Colombia y América Latina<br><br>¿Te interesa conocer los resultados esperados?'; }},
-  { t:['publicación','publicaciones','artículo','articulo','república','republica','nvidia','chips','prensa','medios'], r: function(){ return '📰 Ronald ha sido citado como experto en <strong>La República</strong>:<br><br>📌 <a href="https://www.larepublica.co/internet-economy/los-jugadores-en-la-guerra-de-los-chips-de-ia-nvidia-broadcom-y-tsmc-las-mas-valiosas-4183956" target="_blank" style="color:#1565C0">La guerra de los chips: Nvidia, Broadcom y TSMC</a><br>📅 Julio 2025<br><br>📌 <a href="https://www.larepublica.co/internet-economy/cual-es-el-mejor-modelo-de-inteligencia-artificial-4075578" target="_blank" style="color:#1565C0">¿Cuál es el mejor modelo de IA?</a><br>📅 Marzo 2025<br><br>📌 <a href="https://www.larepublica.co/especiales/la-expansion-de-la-industria-del-software/hasta-68-de-las-empresas-de-software-priorizan-el-uso-de-la-inteligencia-artificial-4211495" target="_blank" style="color:#1565C0">68% de empresas priorizan IA</a><br>📅 Agosto 2025'; }},
-  { t:['contacto','contactar','email','correo','whatsapp','teléfono','telefono','llamar','escribir','comunicar','hablar con ronald'], r: function(){ return '📬 Puedes contactar a Ronald por:<br><br>📧 <strong>Email:</strong> <a href="mailto:ronald.medina.corp@gmail.com" style="color:#1565C0">ronald.medina.corp@gmail.com</a><br>📱 <strong>WhatsApp:</strong> <a href="https://wa.me/573227178417" target="_blank" style="color:#25D366">+57 322 717 8417</a><br>🌐 <strong>Web:</strong> ronalete.github.io/propuesta-ronald<br><br>¡Responde en menos de 24 horas! 🚀'; }},
-  { t:['precio','costo','cuánto','cuanto','tarifa','cobras','presupuesto','valor','cotización','cotizacion'], r: function(){ return '💰 Los precios varían según el proyecto.<br><br>Lo mejor es hablar directamente con Ronald para una propuesta personalizada y sin compromiso:<br><br>📧 <a href="mailto:ronald.medina.corp@gmail.com?subject=Solicitud de cotización" style="color:#1565C0">Solicitar cotización por email</a><br>📱 <a href="https://wa.me/573227178417?text=Hola Ronald, quisiera una cotización" target="_blank" style="color:#25D366">Cotizar por WhatsApp</a><br><br>⚡ Primera consulta <strong>sin costo</strong>.'; }},
-  { t:['colombia','colombiana','país','pais','latinoamérica','latinoamerica','latam','america latina'], r: function(){ return '🇨🇴 Ronald está 100% enfocado en <strong>Colombia</strong> y América Latina:<br><br>🏙️ <strong>116 municipios</strong> de Cundinamarca cubiertos<br>📡 Conectividad rural: <strong>37%</strong> vs urbano <strong>79%</strong><br>🎓 Deserción escolar Cundinamarca: <strong>3.8%</strong><br>📚 Meta: reducir deserción un <strong>53%</strong> con IA<br><br>El modelo es escalable a toda América Latina. 🌎'; }},
-  { t:['ia generativa','chatgpt','gpt','gemini','claude','llm','modelos de lenguaje','llama'], r: function(){ return '🧠 Ronald es experto en <strong>IA Generativa</strong> y modelos de lenguaje (LLMs).<br><br>Ha analizado y comparado modelos como GPT-4, Gemini, Claude y Llama en sus publicaciones de La República.<br><br>Su enfoque es aplicar estos modelos a <strong>problemas reales de Colombia</strong>, especialmente en educación y gobierno.<br><br>¿Quieres saber cómo puede ayudarte con IA Generativa?'; }},
-  { t:['gracias','muchas gracias','perfecto','excelente','genial','listo','ok gracias','muy bien'], r: function(){ return '😊 ¡Con mucho gusto'+(userName?' '+userName:'')+' !<br><br>Si necesitas algo más, aquí estaré. También puedes contactar a Ronald directamente:<br><br>📱 <a href="https://wa.me/573227178417" target="_blank" style="color:#25D366">WhatsApp +57 322 717 8417</a><br><br>¡Hasta pronto! 🚀'; }},
-  { t:['adiós','adios','chao','bye','hasta luego','nos vemos'], r: function(){ return '👋 ¡Hasta luego'+(userName?' '+userName:'')+' ! Fue un placer.<br><br>Recuerda que Ronald siempre está disponible:<br>📱 <a href="https://wa.me/573227178417" target="_blank" style="color:#25D366">+57 322 717 8417</a>'; }}
-];
 
 function toggleChat() {
   chatOpen = !chatOpen;
@@ -1297,8 +1276,8 @@ function toggleChat() {
     var msgs = document.getElementById('chatMessages');
     if (msgs && msgs.children.length === 0) {
       setTimeout(function() {
-        addBotMsg('👋 ¡Hola! Soy el asistente de <strong>Ronald Medina</strong>, experto en IA y transformación digital en Colombia.<br><br>¿En qué te puedo ayudar hoy? Puedes preguntarme sobre sus <strong>servicios</strong>, <strong>investigación doctoral</strong>, <strong>publicaciones</strong> o cómo <strong>contactarlo</strong>. 🚀');
-      }, 400);
+        addBotMsg('👋 ¡Hola! Bienvenido al asistente de <strong>Ronald Yesid Medina Quiroga</strong>.<br><br>En este chat puedo colaborarte con información sobre:<br><br>📌 <strong>El proyecto</strong> – Semilleros en IA para Cundinamarca<br>🎯 <strong>Objetivos</strong> – General y específicos<br>📚 <strong>Marco teórico</strong> – IA educativa, brecha digital<br>⚙️ <strong>Metodología</strong> – Fases e instrumentos<br>📊 <strong>Indicadores</strong> – Datos y estadísticas reales<br>📰 <strong>Publicaciones</strong> – Artículos en La República<br>💼 <strong>Servicios</strong> – Cátedras, capacitaciones, consultoría<br>👤 <strong>Perfil</strong> – Sobre Ronald Medina<br><br>¿Sobre qué tema deseas saber más?');
+      }, 500);
     }
   }
 }
@@ -1333,14 +1312,75 @@ function addUserMsg(txt) {
   msgs.scrollTop = msgs.scrollHeight;
 }
 
+var CONTACT = '<br><br>─────────────────<br>¿Deseas hablar directamente con Ronald?<br>📧 <a href="mailto:ronald.medina.corp@gmail.com" style="color:#1565C0">ronald.medina.corp@gmail.com</a><br>📱 <a href="https://wa.me/573227178417" target="_blank" style="color:#25D366">WhatsApp +57 322 717 8417</a>';
+
+var KB = [
+  {
+    t:['proyecto','presentación','presentacion','de qué trata','de que trata','qué es','que es','semillero','semilleros','transformación','transformacion'],
+    r:'📌 <strong>El Proyecto</strong><br><br>Propone diseñar, implementar y evaluar un modelo formativo de <strong>semilleros de investigación en IA</strong> en instituciones educativas del sector público de Cundinamarca.<br><br>El objetivo es construir equipos humanos que lideren la adopción tecnológica y la producción de datos territoriales como insumo para el desarrollo de la IA en Colombia.<br><br>🔑 Premisa clave: los modelos de IA se alimentan de datos reales. Colombia tiene una deuda en la generación y apertura de datos educativos y sociales.'
+  },
+  {
+    t:['objetivo','objetivos','para qué','para que','finalidad','propósito','proposito','meta'],
+    r:'🎯 <strong>Objetivos del Proyecto</strong><br><br><strong>Objetivo General:</strong> Diseñar e implementar un modelo formativo de semilleros en IA en instituciones públicas de Cundinamarca para fortalecer competencias digitales y producir datos territoriales.<br><br><strong>Objetivos Específicos:</strong><br>1️⃣ Diagnóstico de competencias digitales en docentes y estudiantes<br>2️⃣ Diseño de currículo progresivo en IA (fundamentos, ML, ética)<br>3️⃣ Conformación de equipos interdisciplinarios de investigación<br>4️⃣ Generación del primer repositorio educativo geoespacial abierto de Cundinamarca<br>5️⃣ Evaluación de impacto en permanencia escolar y competencias digitales'
+  },
+  {
+    t:['marco','teórico','teorico','teoria','teoría','referentes','fundamento','aied','educativa','unesco','ai4k12','chile','brasil','uruguay'],
+    r:'📚 <strong>Marco Teórico</strong><br><br>🌎 <strong>AI4K12</strong> (EE.UU., 2019) – Marco curricular de 5 ideas en IA. Adoptado en +40 estados, impactando 12M estudiantes.<br><br>🌐 <strong>UNESCO AI Framework</strong> (2021) – 4 niveles de competencia docente en IA: conciencia, adquisición, profundización y creación.<br><br>🇨🇱 <strong>Chile</strong> – Reducción del 18% en brecha digital educativa en 3 años con semilleros escolares.<br><br>🇧🇷 <strong>Brasil y Uruguay</strong> – Estrategias nacionales de IA con formación docente y reducción de brechas entre 15%-28%.<br><br>🇨🇴 <strong>Colombia</strong> – Plan Nacional de Desarrollo 2022–2026 y Política de IA de MinTIC priorizan la formación en IA en el sector educativo público.'
+  },
+  {
+    t:['metodología','metodologia','método','metodo','fases','etapas','cómo','como','diseño','diseño cuasi','mixto','dbr','investigación basada'],
+    r:'⚙️ <strong>Metodología</strong><br><br>Investigación aplicada de enfoque <strong>mixto</strong> con diseño <strong>cuasi-experimental</strong> (grupo tratamiento vs grupo control).<br><br>Integra <strong>Investigación Basada en Diseño (DBR)</strong> con <strong>Ciencia de Datos para la Educación (EDM)</strong>.<br><br>📅 <strong>4 Fases:</strong><br>🔍 Meses 1–3: Diagnóstico de competencias en 5 IE piloto de Fusagasugá<br>📐 Meses 4–6: Diseño curricular validado con expertos<br>🚀 Meses 7–14: Conformación e implementación de semilleros<br>📊 Meses 15–18: Evaluación de impacto y publicaciones<br><br>🛠️ <strong>Tecnologías:</strong> Python, GeoPandas, QGIS, Scikit-learn, XGBoost, LSTM, React, D3.js, APIs SINEB·SIMAT·IGAC·DANE'
+  },
+  {
+    t:['indicador','indicadores','dato','datos','estadística','estadistica','cifra','cifras','brecha','deserción','desercion','cobertura','conectividad'],
+    r:'📊 <strong>Indicadores Clave</strong><br><br>🔴 <strong>8.97%</strong> – Deserción educación superior Colombia 2023 (SPADIES–MEN 2024)<br>🟠 <strong>3.8%</strong> – Deserción escolar Cundinamarca (SIMAT–MEN 2023)<br>🔴 <strong>643K</strong> – Estudiantes reprobados Colombia 2021, 56% en secundaria (DANE 2022)<br>🟢 <strong>88%</strong> – Tasa de aprobación nacional 2023 (MEN 2024)<br>🔴 <strong>38.4%</strong> – Índice Brecha Digital Colombia (MinTIC·IBD 2024)<br>🔴 <strong>28.9%</strong> – Conectividad rural colombiana (Plan Nacional Desarrollo)<br>🔵 <strong>79%</strong> – Usuarios internet Colombia vs 90% Chile (MinTIC 2025)<br>🔴 <strong>34.7%</strong> – Brecha explicada por falta de habilidades digitales (La Silla Vacía 2024)<br><br>📈 <strong>Proyecciones con el proyecto:</strong><br>• −18% deserción Año 1 (piloto)<br>• −37% deserción Año 2 (expansión)<br>• 12.400 estudiantes atendidos en el piloto<br>• 1er dataset educativo abierto de Cundinamarca'
+  },
+  {
+    t:['publicación','publicaciones','artículo','articulo','república','republica','prensa','medios','nvidia','chips','periódico','periodico','citado'],
+    r:'📰 <strong>Publicaciones en La República</strong><br><br>Ronald ha sido citado como experto en IA en el principal diario económico de Colombia:<br><br>📌 <a href="https://www.larepublica.co/internet-economy/los-jugadores-en-la-guerra-de-los-chips-de-ia-nvidia-broadcom-y-tsmc-las-mas-valiosas-4183956" target="_blank" style="color:#1565C0">La guerra de los chips: Nvidia, Broadcom y TSMC</a><br>📅 Julio 2025<br><br>📌 <a href="https://www.larepublica.co/internet-economy/cual-es-el-mejor-modelo-de-inteligencia-artificial-4075578" target="_blank" style="color:#1565C0">¿Cuál es el mejor modelo de IA?</a><br>📅 Marzo 2025<br><br>📌 <a href="https://www.larepublica.co/especiales/la-expansion-de-la-industria-del-software/hasta-68-de-las-empresas-de-software-priorizan-el-uso-de-la-inteligencia-artificial-4211495" target="_blank" style="color:#1565C0">68% de empresas de software priorizan IA</a><br>📅 Agosto 2025'
+  },
+  {
+    t:['servicio','servicios','contratar','qué ofrece','que ofrece','cátedra','catedra','capacitación','capacitacion','consultoría','consultoria','automatización','automatizacion','analitica','analítica'],
+    r:'💼 <strong>Servicios de Ronald Medina</strong><br><br>🎤 <strong>Cátedras y Charlas en IA</strong> – Conferencias sobre IA, brecha digital y futuro del trabajo para audiencias académicas y corporativas.<br><br>📚 <strong>Capacitación Docente en IA</strong> – Formación en alfabetización digital, pensamiento computacional y herramientas de IA.<br><br>⚙️ <strong>Automatización de Procesos</strong> – Consultoría para identificar y automatizar procesos con IA en gestión educativa y administrativa.<br><br>🌱 <strong>Creación de Semilleros en IA</strong> – Acompañamiento para conformar semilleros en instituciones públicas y privadas.<br><br>📊 <strong>Analítica de Datos Educativos</strong> – Dashboards, modelos predictivos de deserción y alertas tempranas.<br><br>🔬 <strong>Investigación Colaborativa</strong> – Proyectos conjuntos, publicaciones y transferencia de conocimiento.'
+  },
+  {
+    t:['perfil','ronald','quién es','quien es','experiencia','formación académica','formacion academica','ingeniero','magíster','magister','sobre'],
+    r:'👤 <strong>Ronald Yesid Medina Quiroga</strong><br><br>💻 Ingeniero de Sistemas<br>🎓 Mg. Gerencia de Proyectos<br>🤖 Investigador en Inteligencia Artificial<br>📰 Experto citado en <em>La República</em> (diario económico líder de Colombia)<br>🏫 Especialista en transformación digital del sector público<br>🌍 Enfocado en reducir brechas educativas y digitales en Colombia<br>📍 Fusagasugá, Cundinamarca, Colombia'
+  },
+  {
+    t:['contacto','contactar','email','correo','whatsapp','teléfono','telefono','llamar','escribir','comunicar','hablar con','reunión','reunion'],
+    r:'📬 <strong>Contacto Directo</strong><br><br>📧 <a href="mailto:ronald.medina.corp@gmail.com" style="color:#1565C0">ronald.medina.corp@gmail.com</a><br>📱 <a href="https://wa.me/573227178417" target="_blank" style="color:#25D366">WhatsApp +57 322 717 8417</a><br>🌐 <a href="https://ronalete.github.io/propuesta-ronald/" target="_blank" style="color:#1565C0">ronalete.github.io/propuesta-ronald</a><br><br>⚡ Responde en menos de <strong>24 horas</strong>'
+  },
+  {
+    t:['precio','costo','cuánto','cuanto','tarifa','cobras','presupuesto','valor','cotización','cotizacion'],
+    r:'💰 <strong>Cotizaciones</strong><br><br>Los precios varían según el tipo de servicio y el alcance del proyecto.<br><br>✅ Primera consulta <strong>sin costo</strong><br>✅ Propuesta personalizada según necesidades<br>✅ Trabajo con instituciones públicas, privadas y empresas'
+  },
+  {
+    t:['ia','inteligencia artificial','machine learning','deep learning','algoritmo','modelo','gpt','chatgpt','gemini','llama','automatización','automatizacion'],
+    r:'🤖 <strong>Inteligencia Artificial</strong><br><br>Ronald es especialista en IA aplicada con énfasis en:<br><br>• Sistemas predictivos de permanencia escolar<br>• Machine Learning (Scikit-learn, XGBoost, LSTM)<br>• Análisis geoespacial educativo (GeoPandas, QGIS)<br>• IA Generativa y modelos de lenguaje (LLMs)<br>• Automatización de procesos institucionales<br>• Producción de datos territoriales abiertos'
+  },
+  {
+    t:['colombia','cundinamarca','fusagasugá','fusagasuga','municipios','latinoamérica','latinoamerica','latam','región','region'],
+    r:'🇨🇴 <strong>Enfoque en Colombia</strong><br><br>• Proyecto piloto en <strong>5 instituciones</strong> de Fusagasugá<br>• Potencial de expansión a <strong>116 municipios</strong> de Cundinamarca<br>• Colombia: puesto 7 en conectividad en Latinoamérica con <strong>79%</strong> de usuarios internet<br>• <strong>34.7%</strong> de la brecha digital se explica por falta de habilidades (no infraestructura)<br>• Modelo escalable a toda <strong>América Latina</strong>'
+  },
+  {
+    t:['gracias','muchas gracias','perfecto','excelente','genial','listo','entendí','entendi','claro','ok'],
+    r:'😊 ¡Con mucho gusto! Me alegra haberte sido útil.<br><br>Si tienes más preguntas sobre el proyecto o deseas hablar directamente con Ronald:' + CONTACT
+  },
+  {
+    t:['adiós','adios','chao','bye','hasta luego','nos vemos','hasta pronto'],
+    r:'👋 ¡Hasta pronto! Fue un placer asistirte.<br><br>Recuerda que Ronald está disponible para charlas, consultorías y proyectos:' + CONTACT
+  }
+];
+
 function getResponse(inp) {
   var lower = inp.toLowerCase().trim();
   for (var i = 0; i < KB.length; i++) {
     if (KB[i].t.some(function(t) { return lower.includes(t); })) {
-      return KB[i].r(inp);
+      return KB[i].r + (KB[i].t.indexOf('contacto') === -1 && KB[i].t.indexOf('gracias') === -1 && KB[i].t.indexOf('adiós') === -1 ? CONTACT : '');
     }
   }
-  return '🤔 Entiendo tu consulta. Para darte la mejor respuesta, te recomiendo contactar a Ronald directamente:<br><br>📧 <a href="mailto:ronald.medina.corp@gmail.com?subject=Consulta&body='+encodeURIComponent(inp)+'" style="color:#1565C0">Enviar por email</a><br>📱 <a href="https://wa.me/573227178417?text='+encodeURIComponent('Hola Ronald, tengo una consulta: '+inp)+'" target="_blank" style="color:#25D366">Enviar por WhatsApp</a><br><br>También puedes preguntar sobre: <strong>servicios, contacto, investigación, publicaciones o IA</strong>.';
+  return '🤔 Puedo ayudarte con información sobre el proyecto. Los temas disponibles son:<br><br>📌 Proyecto · 🎯 Objetivos · 📚 Marco Teórico · ⚙️ Metodología · 📊 Indicadores · 📰 Publicaciones · 💼 Servicios · 👤 Perfil · 📬 Contacto' + CONTACT;
 }
 
 function sendMessage() {
