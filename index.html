@@ -1266,7 +1266,7 @@ window.addEventListener('load', function() {
 <script>
 var chatOpen = false;
 
-var SYSTEM_PROMPT = `Eres el asistente virtual de Ronald Yesid Medina Quiroga, experto en Inteligencia Artificial y transformación digital en Colombia. 
+var SYSTEM_PROMPT = `Eres el asistente virtual de Ronald Yesid Medina Quiroga, experto en Inteligencia Artificial y transformación digital en Colombia.
 
 SOBRE RONALD:
 - Mg. Gerencia de Proyectos, Ingeniero de Sistemas
@@ -1275,7 +1275,7 @@ SOBRE RONALD:
 - Más de 10 años de experiencia en IA y tecnología
 
 SU INVESTIGACIÓN DOCTORAL:
-- Título: "Arquitectura Nacional de Datos Territoriales con IA para Colombia"
+- Título: Arquitectura Nacional de Datos Territoriales con IA para Colombia
 - Objetivo: reducir deserción escolar en 116 municipios de Cundinamarca usando sistemas multiagente con IA
 - Brecha digital urbano-rural: 38.4%
 - Reducción proyectada de deserción: -53%
@@ -1291,22 +1291,22 @@ SERVICIOS QUE OFRECE RONALD:
 - Ciudades Inteligentes: infraestructura de datos territoriales
 
 PUBLICACIONES EN LA REPÚBLICA:
-- "La guerra de los chips de IA: Nvidia, Broadcom y TSMC" (Jul 2025)
-- "¿Cuál es el mejor modelo de IA?" (Mar 2025)
-- "68% de empresas de software priorizan IA" (Ago 2025)
+- La guerra de los chips de IA: Nvidia, Broadcom y TSMC (Jul 2025)
+- ¿Cuál es el mejor modelo de IA? (Mar 2025)
+- 68% de empresas de software priorizan IA (Ago 2025)
 
 CONTACTO:
 - Email: ronald.medina.corp@gmail.com
 - WhatsApp: +57 322 717 8417
 - Web: ronalete.github.io/propuesta-ronald
 
-INSTRUCCIONES DE COMPORTAMIENTO:
+INSTRUCCIONES:
 - Responde SIEMPRE en español
 - Sé amable, profesional y conciso
-- Si te preguntan algo fuera del perfil de Ronald, redirige amablemente hacia sus servicios o contacto
-- Usa emojis con moderación para hacer las respuestas más amigables
+- Usa emojis con moderación
 - Si alguien quiere contratar o cotizar, dales el email y WhatsApp de Ronald
-- Máximo 3-4 párrafos por respuesta`;
+- Máximo 3-4 párrafos por respuesta
+- Si no sabes algo, redirige al contacto de Ronald`;
 
 var chatHistory = [];
 
@@ -1320,7 +1320,7 @@ function toggleChat() {
     var msgs = document.getElementById('chatMessages');
     if (msgs && msgs.children.length === 0) {
       setTimeout(function() {
-        addBotMsg('👋 ¡Hola! Soy el asistente de <strong>Ronald Medina</strong>, experto en IA y transformación digital.<br><br>Puedo responder cualquier pregunta sobre sus <strong>servicios</strong>, <strong>investigación doctoral</strong>, <strong>publicaciones</strong> o cómo <strong>contactarlo</strong>. ¿En qué te ayudo? 🚀');
+        addBotMsg('👋 ¡Hola! Soy el asistente de <strong>Ronald Medina</strong>, experto en IA.<br><br>Puedo responder cualquier pregunta sobre sus <strong>servicios</strong>, <strong>investigación</strong>, <strong>publicaciones</strong> o cómo <strong>contactarlo</strong>. ¿En qué te ayudo? 🚀');
       }, 400);
     }
   }
@@ -1329,21 +1329,11 @@ function toggleChat() {
 function addBotMsg(html) {
   var msgs = document.getElementById('chatMessages');
   if (!msgs) return;
-  var typing = document.createElement('div');
-  typing.id = 'typing-indicator';
-  typing.style.cssText = 'display:flex;gap:.5rem;align-items:center;margin-bottom:.75rem';
-  typing.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#1565C0,#00B4D8);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">🤖</div><div style="background:#F8FAFD;border:1px solid #E3EAF4;padding:.6rem .9rem;border-radius:0 12px 12px 12px;font-size:.76rem;color:#5A6A80;letter-spacing:.1em">⬤ ⬤ ⬤</div>';
-  msgs.appendChild(typing);
+  var div = document.createElement('div');
+  div.style.cssText = 'display:flex;gap:.5rem;align-items:flex-start;margin-bottom:.75rem';
+  div.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#1565C0,#00B4D8);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">🤖</div><div style="background:#F8FAFD;border:1px solid #E3EAF4;padding:.6rem .9rem;border-radius:0 12px 12px 12px;font-size:.76rem;line-height:1.6;color:#1A2332;max-width:85%">' + html + '</div>';
+  msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
-  setTimeout(function() {
-    var t = document.getElementById('typing-indicator');
-    if (t) t.remove();
-    var div = document.createElement('div');
-    div.style.cssText = 'display:flex;gap:.5rem;align-items:flex-start;margin-bottom:.75rem';
-    div.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#1565C0,#00B4D8);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">🤖</div><div style="background:#F8FAFD;border:1px solid #E3EAF4;padding:.6rem .9rem;border-radius:0 12px 12px 12px;font-size:.76rem;line-height:1.6;color:#1A2332;max-width:85%">' + html + '</div>';
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
-  }, 800);
 }
 
 function addUserMsg(txt) {
@@ -1356,6 +1346,22 @@ function addUserMsg(txt) {
   msgs.scrollTop = msgs.scrollHeight;
 }
 
+function showTyping() {
+  var msgs = document.getElementById('chatMessages');
+  if (!msgs) return;
+  var typing = document.createElement('div');
+  typing.id = 'typing-indicator';
+  typing.style.cssText = 'display:flex;gap:.5rem;align-items:center;margin-bottom:.75rem';
+  typing.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#1565C0,#00B4D8);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">🤖</div><div style="background:#F8FAFD;border:1px solid #E3EAF4;padding:.6rem .9rem;border-radius:0 12px 12px 12px;font-size:.85rem;color:#5A6A80;letter-spacing:.15em">⬤ ⬤ ⬤</div>';
+  msgs.appendChild(typing);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideTyping() {
+  var t = document.getElementById('typing-indicator');
+  if (t) t.remove();
+}
+
 function sendMessage() {
   var input = document.getElementById('chatInput');
   if (!input) return;
@@ -1365,18 +1371,12 @@ function sendMessage() {
   input.value = '';
   input.style.height = 'auto';
   chatHistory.push({ role: 'user', parts: [{ text: txt }] });
-  callGemini(txt);
+  showTyping();
+  callGemini();
 }
 
-function callGemini(userMsg) {
-  var msgs = document.getElementById('chatMessages');
-  var typing = document.createElement('div');
-  typing.id = 'typing-indicator';
-  typing.style.cssText = 'display:flex;gap:.5rem;align-items:center;margin-bottom:.75rem';
-  typing.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#1565C0,#00B4D8);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">🤖</div><div style="background:#F8FAFD;border:1px solid #E3EAF4;padding:.6rem .9rem;border-radius:0 12px 12px 12px;font-size:.76rem;color:#5A6A80;letter-spacing:.1em">⬤ ⬤ ⬤</div>';
-  if (msgs) { msgs.appendChild(typing); msgs.scrollTop = msgs.scrollHeight; }
-
-  var API_KEY = 'TU_API_KEY_AQUI';
+function callGemini() {
+  var API_KEY = 'AIzaSyAgyoZXOObkd_vkLKmWby_vT_HtLa9DbJw';
   var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + API_KEY;
 
   var body = {
@@ -1391,21 +1391,25 @@ function callGemini(userMsg) {
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
-    var t = document.getElementById('typing-indicator');
-    if (t) t.remove();
-    var reply = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text;
-    if (!reply) reply = '⚠️ No pude obtener respuesta. Contacta a Ronald directamente:<br>📧 ronald.medina.corp@gmail.com<br>📱 <a href="https://wa.me/573227178417" target="_blank" style="color:#25D366">+57 322 717 8417</a>';
-    reply = reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>');
+    hideTyping();
+    var reply = '';
+    if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
+      reply = data.candidates[0].content.parts[0].text;
+    }
+    if (!reply) {
+      reply = '⚠️ No pude obtener respuesta. Contacta a Ronald:\n📧 ronald.medina.corp@gmail.com\n📱 +57 322 717 8417';
+    }
+    reply = reply
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g,'<em>$1</em>')
+      .replace(/\n/g,'<br>');
     chatHistory.push({ role: 'model', parts: [{ text: reply }] });
-    var div = document.createElement('div');
-    div.style.cssText = 'display:flex;gap:.5rem;align-items:flex-start;margin-bottom:.75rem';
-    div.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#1565C0,#00B4D8);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">🤖</div><div style="background:#F8FAFD;border:1px solid #E3EAF4;padding:.6rem .9rem;border-radius:0 12px 12px 12px;font-size:.76rem;line-height:1.6;color:#1A2332;max-width:85%">' + reply + '</div>';
-    if (msgs) { msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight; }
+    addBotMsg(reply);
   })
-  .catch(function() {
-    var t = document.getElementById('typing-indicator');
-    if (t) t.remove();
-    addBotMsg('⚠️ Error de conexión. Contacta a Ronald:<br>📧 ronald.medina.corp@gmail.com<br>📱 <a href="https://wa.me/573227178417" target="_blank" style="color:#25D366">+57 322 717 8417</a>');
+  .catch(function(err) {
+    hideTyping();
+    addBotMsg('⚠️ Error de conexión. Contacta a Ronald directamente:<br>📧 ronald.medina.corp@gmail.com<br>📱 <a href="https://wa.me/573227178417" target="_blank" style="color:#25D366">+57 322 717 8417</a>');
   });
 }
 
@@ -1424,6 +1428,7 @@ function autoResize(el) {
   el.style.height = Math.min(el.scrollHeight, 90) + 'px';
 }
 </script>
+
 
 
 </body>
